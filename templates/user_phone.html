@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Yukti AI - Farmer Mobile Assistant</title>
+  <meta name="description" content="Yukti AI Farmer Mobile Assistant - Simple, Actionable Farm Intelligence and End Results Only">
+
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --phone-bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-subtle: #f1f5f9;
+      --text-main: #0f172a;
+      --text-body: #334155;
+      --text-muted: #64748b;
+      --border-subtle: #e2e8f0;
+      
+      --emerald-600: #059669;
+      --emerald-500: #10b981;
+      --emerald-50: #ecfdf5;
+      --emerald-glow: rgba(16, 185, 129, 0.25);
+
+      --sky-600: #0284c7;
+      --sky-500: #0ea5e9;
+      --sky-50: #f0f9ff;
+
+      --amber-600: #d97706;
+      --amber-500: #f59e0b;
+      --amber-50: #fffbeb;
+
+      --rose-600: #e11d48;
+      --rose-500: #f43f5e;
+      --rose-50: #fff1f2;
+
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-heading: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --phone-bg: #0b1120;
+      --card-bg: #151e2e;
+      --card-subtle: #1e293b;
+      --text-main: #f8fafc;
+      --text-body: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border-subtle: #243248;
+      --emerald-50: rgba(16, 185, 129, 0.12);
+      --sky-50: rgba(2, 132, 199, 0.12);
+      --amber-50: rgba(245, 158, 11, 0.12);
+      --rose-50: rgba(244, 63, 94, 0.12);
+    }
+
+    body[data-lang="hi"] {
+      font-family: 'Noto Sans Devanagari', var(--font-body);
+    }
+    body[data-lang="hi"] h1, body[data-lang="hi"] h2, body[data-lang="hi"] h3, body[data-lang="hi"] h4 {
+      font-family: 'Noto Sans Devanagari', var(--font-heading);
+    }
+
+    body[data-lang="pa"] {
+      font-family: 'Noto Sans Gurmukhi', var(--font-body);
+    }
+    body[data-lang="pa"] h1, body[data-lang="pa"] h2, body[data-lang="pa"] h3, body[data-lang="pa"] h4 {
+      font-family: 'Noto Sans Gurmukhi', var(--font-heading);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: #0f172a;
+      color: var(--text-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 0.5rem;
+      background-image: 
+        radial-gradient(circle at 20% 15%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 80% 85%, rgba(2, 132, 199, 0.12) 0%, transparent 45%),
+        linear-gradient(to bottom, #070b12 0%, #0d1525 100%);
+    }
+
+    /* Desktop Outer Controls (Toggle frame & Admin Switch) */
+    .outer-controls-bar {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+      padding: 0 0.5rem;
+    }
+
+    .outer-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+
+    .outer-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .outer-btn.admin-link {
+      background: rgba(2, 132, 199, 0.25);
+      border-color: rgba(2, 132, 199, 0.5);
+      color: #38bdf8;
+    }
+
+    /* Smartphone Device Shell */
+    .phone-mockup-wrapper {
+      width: 100%;
+      max-width: 416px;
+      height: 870px;
+      max-height: 94vh;
+      background: var(--phone-bg);
+      border-radius: 44px;
+      box-shadow: 
+        0 0 0 10px #1e293b,
+        0 0 0 12px #334155,
+        0 25px 60px -15px rgba(0, 0, 0, 0.75);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+
+    /* Fullscreen Mode on Desktop */
+    body.fullscreen-mode {
+      padding: 0;
+      background: var(--phone-bg);
+    }
+    body.fullscreen-mode .outer-controls-bar {
+      display: none;
+    }
+    body.fullscreen-mode .phone-mockup-wrapper {
+      max-width: 540px;
+      height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    /* Actual Mobile Viewport */
+    @media (max-width: 520px) {
+      body {
+        padding: 0;
+        background: var(--phone-bg);
+      }
+      .outer-controls-bar {
+        display: none;
+      }
+      .phone-mockup-wrapper {
+        max-width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    /* Phone Dynamic Island / Punch Hole */
+    .phone-status-island {
+      height: 38px;
+      background: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.25rem;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .phone-notch-pill {
+      width: 82px;
+      height: 18px;
+      background: #000000;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .notch-camera-dot {
+      width: 7px;
+      height: 7px;
+      background: #1e293b;
+      border-radius: 50%;
+    }
+
+    /* Phone Header App Bar */
+    .phone-app-bar {
+      background: var(--card-bg);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      z-index: 40;
+      flex-shrink: 0;
+    }
+
+    .farmer-profile-info {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .farmer-avatar {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--emerald-600) 0%, var(--emerald-500) 100%);
+      color: #ffffff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      box-shadow: 0 4px 10px var(--emerald-glow);
+    }
+
+    .farmer-text h2 {
+      font-family: var(--font-heading);
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .farmer-text p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .app-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .app-action-btn {
+      background: var(--card-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.3rem 0.55rem;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .app-action-btn select {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    /* Scrollable App Body */
+    .phone-body-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .phone-body-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .phone-body-scroll::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.2);
+      border-radius: 4px;
+    }
+
+    /* Phone Tab Panes */
+    .app-tab-pane {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .app-tab-pane.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Clean Card Component */
+    .result-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.15rem;
+      box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    /* Overall Farm Status Hero Banner */
+    .farm-hero-banner {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 1.25rem;
+      box-shadow: 0 8px 20px var(--emerald-glow);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .farm-hero-banner::after {
+      content: '';
+      position: absolute;
+      right: -20px;
+      bottom: -20px;
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero-pill {
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(4px);
+      padding: 0.2rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-status-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .hero-status-desc {
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
+    }
+
+    /* 2x2 Clean Outcome Metric Grid */
+    .phone-kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .phone-kpi-tile {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .phone-kpi-tile:active {
+      transform: scale(0.98);
+    }
+
+    .kpi-tile-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .kpi-tile-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .kpi-tile-icon.green { background: var(--emerald-50); color: var(--emerald-600); }
+    .kpi-tile-icon.blue { background: var(--sky-50); color: var(--sky-600); }
+    .kpi-tile-icon.amber { background: var(--amber-50); color: var(--amber-600); }
+    .kpi-tile-icon.rose { background: var(--rose-50); color: var(--rose-600); }
+
+    .phone-kpi-title {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .phone-kpi-val {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .phone-kpi-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .pill-good { color: var(--emerald-600); }
+    .pill-warn { color: var(--amber-600); }
+    .pill-info { color: var(--sky-600); }
+
+    /* Actionable 3-Hour Engine Notice Card */
+    .engine-action-card {
+      background: var(--card-subtle);
+      border-left: 4px solid var(--emerald-600);
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .engine-action-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .engine-action-card p {
+      font-size: 0.78rem;
+      color: var(--text-body);
+      line-height: 1.45;
+    }
+
+    /* Diagnosis Camera & Photo Box */
+    .mobile-upload-box {
+      border: 2px dashed var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 0.5rem;
+      background: var(--card-subtle);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mobile-upload-box:hover {
+      border-color: var(--emerald-500);
+      background: var(--emerald-50);
+    }
+
+    .mobile-upload-box i {
+      font-size: 2.2rem;
+      color: var(--emerald-600);
+    }
+
+    .mobile-upload-box h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .mobile-upload-box p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* 1-Tap Sample Chips */
+    .mobile-sample-row {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+      scrollbar-width: none;
+    }
+
+    .mobile-sample-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mobile-chip {
+      background: var(--card-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: 9999px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .mobile-chip:hover {
+      border-color: var(--emerald-500);
+      background: var(--emerald-50);
+    }
+
+    /* Action Buttons */
+    .btn-mobile-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--emerald-600) 0%, var(--emerald-500) 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      padding: 0.85rem;
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 14px var(--emerald-glow);
+      transition: all 0.2s ease;
+    }
+
+    .btn-mobile-primary:active {
+      transform: scale(0.98);
+    }
+
+    /* Result Outcome Box (ONLY End Result) */
+    .end-result-banner {
+      border-radius: 14px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .end-result-banner.success {
+      background: #f0fdf4;
+      border: 1.5px solid #86efac;
+      color: #14532d;
+    }
+    [data-theme="dark"] .end-result-banner.success {
+      background: rgba(22, 101, 52, 0.2);
+      border-color: rgba(34, 197, 94, 0.4);
+      color: #86efac;
+    }
+
+    .end-result-banner.danger {
+      background: #fef2f2;
+      border: 1.5px solid #fca5a5;
+      color: #7f1d1d;
+    }
+    [data-theme="dark"] .end-result-banner.danger {
+      background: rgba(153, 27, 27, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .end-result-banner.warning {
+      background: #fffbeb;
+      border: 1.5px solid #fde68a;
+      color: #78350f;
+    }
+    [data-theme="dark"] .end-result-banner.warning {
+      background: rgba(146, 64, 14, 0.2);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #fde68a;
+    }
+
+    .banner-head-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .banner-result-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .banner-pill {
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    /* Remedy & Treatment Card */
+    .remedy-list-box {
+      background: var(--card-subtle);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      font-size: 0.82rem;
+    }
+
+    .remedy-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      color: var(--text-body);
+      line-height: 1.4;
+    }
+
+    .remedy-item i {
+      color: var(--emerald-600);
+      margin-top: 0.2rem;
+      flex-shrink: 0;
+    }
+
+    /* Image Preview Container */
+    .mobile-img-preview {
+      width: 100%;
+      height: 180px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-img-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Visual Water Gauge for Phone Screen */
+    .phone-water-gauge-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 1rem 0;
+      gap: 1rem;
+    }
+
+    .circular-meter {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: conic-gradient(var(--sky-500) 0% 28%, var(--card-subtle) 28% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .circular-meter-inner {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .meter-val {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--sky-600);
+      line-height: 1;
+    }
+
+    .meter-lbl {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Bottom Navigation Bar */
+    .phone-bottom-nav {
+      height: 64px;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 0.5rem;
+      flex-shrink: 0;
+      z-index: 50;
+    }
+
+    .nav-tab-btn {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+
+    .nav-tab-btn i {
+      font-size: 1.15rem;
+      transition: transform 0.15s ease;
+    }
+
+    .nav-tab-btn span {
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .nav-tab-btn.active {
+      color: var(--emerald-600);
+    }
+
+    .nav-tab-btn.active i {
+      transform: translateY(-2px);
+    }
+
+    /* Gallery Grid in Phone */
+    .phone-gallery-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .phone-gallery-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.6rem;
+    }
+
+    .gallery-thumb-mini {
+      width: 76px;
+      height: 76px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #000;
+    }
+
+    .gallery-thumb-mini img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gallery-meta-mini {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .gallery-title-mini {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Desktop Outer Bar (Visible on Monitor screens to switch view/role) -->
+  <div class="outer-controls-bar">
+    <button class="outer-btn" id="toggleFrameBtn">
+      <i class="fa-solid fa-mobile-screen"></i> <span id="txtToggleFrame">Phone Mockup / Fullscreen</span>
+    </button>
+
+    {% if user and user.role == 'admin' %}
+    <a href="/admin" class="outer-btn admin-link">
+      <i class="fa-solid fa-sliders"></i> <span>Return to Admin Console</span>
+    </a>
+    {% endif %}
+
+    <a href="/logout" class="outer-btn" style="color: #f87171;">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+    </a>
+  </div>
+
+  <!-- Mobile Smartphone Screen Container -->
+  <div class="phone-mockup-wrapper" id="phoneWrapper">
+
+    <!-- Top Status Bar (Clock, Punch Hole, Battery/Wifi) -->
+    <div class="phone-status-island">
+      <span id="phoneClock">09:41</span>
+      
+      <div class="phone-notch-pill">
+        <div class="notch-camera-dot"></div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.4rem;">
+        <i class="fa-solid fa-signal" style="font-size: 0.7rem;"></i>
+        <i class="fa-solid fa-wifi" style="font-size: 0.7rem;"></i>
+        <i class="fa-solid fa-battery-full" style="font-size: 0.75rem;"></i>
+      </div>
+    </div>
+
+    <!-- Phone App Header Bar -->
+    <div class="phone-app-bar">
+      <div class="farmer-profile-info">
+        <div class="farmer-avatar">
+          <i class="fa-solid fa-seedling"></i>
+        </div>
+        <div class="farmer-text">
+          <h2 id="appBrandTitle">Yukti AI</h2>
+          <p id="appFarmSubtitle">
+            <span style="display: inline-block; width: 6px; height: 6px; background: #22c55e; border-radius: 50%;"></span>
+            <span id="txtFarmSector">{{ user.farm if user else 'Green Valley Farm' }}</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="app-bar-actions">
+        <!-- Multilingual Dropdown -->
+        <div class="app-action-btn" title="Change Language">
+          <i class="fa-solid fa-language" style="color: var(--emerald-600);"></i>
+          <select id="userLangSelect" aria-label="Select Language">
+            <option value="en">EN</option>
+            <option value="hi">हिन्दी</option>
+            <option value="pa">ਪੰਜਾਬੀ</option>
+          </select>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button class="app-action-btn" id="phoneThemeBtn" title="Toggle Dark/Light Mode">
+          <i class="fa-solid fa-moon" id="phoneThemeIcon" style="color: #f59e0b;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable Content Body -->
+    <div class="phone-body-scroll">
+
+      <!-- ===================================================================
+           TAB 1: TODAY / HOME (Clean Farm Condition Overview)
+           =================================================================== -->
+      <div class="app-tab-pane active" id="pane-home">
+        
+        <!-- Farm Health Outcome Hero Banner -->
+        <div class="farm-hero-banner">
+          <div class="hero-badge-row">
+            <span class="hero-pill" id="txtHeroBadge">3-Hour AI Autopilot: Active</span>
+            <i class="fa-solid fa-cloud-sun" style="font-size: 1.2rem;"></i>
+          </div>
+          <div class="hero-status-title" id="txtHeroTitle">Farm Status: Optimal & Safe</div>
+          <div class="hero-status-desc" id="txtHeroDesc">
+            Soil moisture is balanced. No active crop diseases or perimeter threats detected in your sector.
+          </div>
+        </div>
+
+        <!-- 2x2 Outcome Metric Tiles (Only End Results) -->
+        <div class="phone-kpi-grid">
+          <!-- Water -->
+          <div class="phone-kpi-tile" onclick="switchTab('water')">
+            <div class="kpi-tile-top">
+              <span class="phone-kpi-title" id="kpiTileWaterLbl">Paddy Water</span>
+              <div class="kpi-tile-icon blue"><i class="fa-solid fa-water"></i></div>
+            </div>
+            <div class="phone-kpi-val" id="kpiTileWaterVal">12.8 cm</div>
+            <div class="phone-kpi-pill pill-good" id="kpiTileWaterPill">
+              <i class="fa-solid fa-circle-check"></i> Safe Depth (&lt;15cm)
+            </div>
+          </div>
+
+          <!-- Sentry -->
+          <div class="phone-kpi-tile" onclick="switchTab('sentry')">
+            <div class="kpi-tile-top">
+              <span class="phone-kpi-title" id="kpiTileSentryLbl">Boundary Sentry</span>
+              <div class="kpi-tile-icon amber"><i class="fa-solid fa-shield-halved"></i></div>
+            </div>
+            <div class="phone-kpi-val" id="kpiTileSentryVal">Safe</div>
+            <div class="phone-kpi-pill pill-good" id="kpiTileSentryPill">
+              <i class="fa-solid fa-circle-check"></i> No Active Intruder
+            </div>
+          </div>
+
+          <!-- Leaf Health -->
+          <div class="phone-kpi-tile" onclick="switchTab('leaf')">
+            <div class="kpi-tile-top">
+              <span class="phone-kpi-title" id="kpiTileLeafLbl">Crop Health</span>
+              <div class="kpi-tile-icon green"><i class="fa-solid fa-leaf"></i></div>
+            </div>
+            <div class="phone-kpi-val" id="kpiTileLeafVal">Healthy</div>
+            <div class="phone-kpi-pill pill-good" id="kpiTileLeafPill">
+              <i class="fa-solid fa-circle-check"></i> Ready to scan
+            </div>
+          </div>
+
+          <!-- Rain & Canal -->
+          <div class="phone-kpi-tile" onclick="switchTab('water')">
+            <div class="kpi-tile-top">
+              <span class="phone-kpi-title" id="kpiTileCanalLbl">Canal Sluice</span>
+              <div class="kpi-tile-icon green"><i class="fa-solid fa-faucet"></i></div>
+            </div>
+            <div class="phone-kpi-val" id="kpiTileCanalVal">25% Open</div>
+            <div class="phone-kpi-pill pill-info" id="kpiTileCanalPill">
+              <i class="fa-solid fa-circle-info"></i> Normal Gravity Flow
+            </div>
+          </div>
+        </div>
+
+        <!-- Actionable 3-Hour Engine Notice -->
+        <div class="engine-action-card">
+          <h4>
+            <i class="fa-solid fa-robot" style="color: var(--emerald-600);"></i>
+            <span id="txtEngineNoticeTitle">Latest 3-Hour AI Advisory</span>
+          </h4>
+          <p id="txtEngineNoticeDesc">
+            Sweep completed. All sluices are nominal. Field soil moisture is 58.6% (ideal root aeration). No emergency pump required.
+          </p>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div style="display: flex; gap: 0.65rem;">
+          <button class="btn-mobile-primary" onclick="switchTab('leaf')" style="flex: 1;">
+            <i class="fa-solid fa-camera"></i> <span id="btnHomeCheckLeaf">Check Leaf Now</span>
+          </button>
+          <button class="btn-mobile-primary" onclick="switchTab('sentry')" style="flex: 1; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);">
+            <i class="fa-solid fa-binoculars"></i> <span id="btnHomeCheckSentry">Check Perimeter</span>
+          </button>
+        </div>
+
+      </div>
+
+
+      <!-- ===================================================================
+           TAB 2: LEAF DOCTOR (Instant Diagnosis - Only End Result)
+           =================================================================== -->
+      <div class="app-tab-pane" id="pane-leaf">
+        
+        <div class="result-card">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);" id="txtLeafDocTitle">🍃 Leaf Health Doctor</h3>
+              <p style="font-size: 0.74rem; color: var(--text-muted);" id="txtLeafDocSub">Take or upload a leaf photo for instant remedy</p>
+            </div>
+            <span class="hero-pill" style="background: var(--emerald-50); color: var(--emerald-600); border: 1px solid rgba(16, 185, 129, 0.3);">AI Doctor</span>
+          </div>
+
+          <!-- Camera / Upload Dropzone -->
+          <div class="mobile-upload-box" id="userLeafDropzone" onclick="document.getElementById('userLeafInput').click()">
+            <i class="fa-solid fa-camera-retro"></i>
+            <h4 id="txtLeafUploadPrompt">Take Photo or Pick from Gallery</h4>
+            <p id="txtLeafUploadHint">Tap here to choose a foliage picture</p>
+            <input type="file" id="userLeafInput" accept="image/*" style="display: none;">
+          </div>
+
+          <!-- Preview if selected -->
+          <div id="userLeafPreviewBox" style="display: none;" class="mobile-img-preview">
+            <img id="userLeafImg" src="" alt="Selected leaf">
+          </div>
+
+          <!-- 1-Click Field Samples -->
+          <div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 600; margin-bottom: 0.4rem;" id="txtLeafSampleLabel">
+              Or test with instant field sample:
+            </div>
+            <div class="mobile-sample-row">
+              <button class="mobile-chip" onclick="testLeafSample('plant_leaf_healthy.jpg', 'Healthy')">
+                <i class="fa-solid fa-circle-check" style="color: #059669;"></i> <span id="txtSampleHealthy">Healthy Leaf</span>
+              </button>
+              <button class="mobile-chip" onclick="testLeafSample('plant_leaf_blight.jpg', 'Blight')">
+                <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i> <span id="txtSampleBlight">Blight Leaf</span>
+              </button>
+              <button class="mobile-chip" onclick="testLeafSample('plant_leaf_rust.jpg', 'Rust')">
+                <i class="fa-solid fa-biohazard" style="color: #d97706;"></i> <span id="txtSampleRust">Rust Leaf</span>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-mobile-primary" id="btnDiagnoseLeaf" onclick="runLeafDiagnosis()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="btnTxtDiagnoseLeaf">Diagnose Leaf Health</span>
+          </button>
+        </div>
+
+        <!-- Diagnosis Result Card (ONLY End Result) -->
+        <div id="leafResultWrapper" style="display: none;" class="result-card">
+          <div class="end-result-banner success" id="leafBanner">
+            <div class="banner-head-row">
+              <span class="banner-result-title" id="leafResultTitle">Healthy Foliage</span>
+              <span class="banner-pill" id="leafConfidencePill">98% Accuracy</span>
+            </div>
+            <p style="font-size: 0.8rem;" id="leafStatusSummary">No pathogen lesions or leaf blight found.</p>
+          </div>
+
+          <!-- Remedy & Prescription Section -->
+          <div>
+            <h4 style="font-size: 0.86rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;" id="txtRemedyHeading">
+              🌿 Actionable Farm Prescription:
+            </h4>
+            <div class="remedy-list-box" id="leafRemedyList">
+              <div class="remedy-item"><i class="fa-solid fa-check"></i> <span>Continue standard irrigation and fertilizer application.</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- ===================================================================
+           TAB 3: PERIMETER SENTRY (Intrusion & Wildlife Protection)
+           =================================================================== -->
+      <div class="app-tab-pane" id="pane-sentry">
+        
+        <div class="result-card">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);" id="txtSentryTitle">🛡️ Perimeter Sentry</h3>
+              <p style="font-size: 0.74rem; color: var(--text-muted);" id="txtSentrySub">Automated detection of wild boars, cattle, & trespassers</p>
+            </div>
+            <span class="hero-pill" style="background: var(--amber-50); color: var(--amber-600); border: 1px solid rgba(245, 158, 11, 0.3);">Sentry Cam</span>
+          </div>
+
+          <!-- Camera / Upload Dropzone -->
+          <div class="mobile-upload-box" id="userSentryDropzone" onclick="document.getElementById('userSentryInput').click()">
+            <i class="fa-solid fa-binoculars" style="color: var(--amber-600);"></i>
+            <h4 id="txtSentryUploadPrompt">Upload Boundary Camera Frame</h4>
+            <p id="txtSentryUploadHint">CCTV capture or trail camera photo</p>
+            <input type="file" id="userSentryInput" accept="image/*" style="display: none;">
+          </div>
+
+          <!-- Preview -->
+          <div id="userSentryPreviewBox" style="display: none;" class="mobile-img-preview">
+            <img id="userSentryImg" src="" alt="Perimeter frame">
+          </div>
+
+          <!-- 1-Click Field Sample -->
+          <div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 600; margin-bottom: 0.4rem;" id="txtSentrySampleLabel">
+              Or test with boundary sample:
+            </div>
+            <div class="mobile-sample-row">
+              <button class="mobile-chip" onclick="testSentrySample('intrusion_scene.jpg')">
+                <i class="fa-solid fa-camera"></i> <span id="txtSampleSentryScene">Boundary Camera #104 (Wild Animals)</span>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-mobile-primary" id="btnDiagnoseSentry" onclick="runSentryCheck()" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);">
+            <i class="fa-solid fa-shield-cat"></i> <span id="btnTxtDiagnoseSentry">Scan Perimeter For Intruders</span>
+          </button>
+        </div>
+
+        <!-- Sentry Result Card (ONLY End Result) -->
+        <div id="sentryResultWrapper" style="display: none;" class="result-card">
+          <div class="end-result-banner danger" id="sentryBanner">
+            <div class="banner-head-row">
+              <span class="banner-result-title" id="sentryResultTitle">⚠️ Intruder Detected!</span>
+              <span class="banner-pill" id="sentryCountPill">1 Target Found</span>
+            </div>
+            <p style="font-size: 0.8rem;" id="sentryResultDesc">Wild animal localized near Sector 4 North boundary fence.</p>
+          </div>
+
+          <!-- Action Advisory -->
+          <div>
+            <h4 style="font-size: 0.86rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;" id="txtSentryActionHeading">
+              🚨 Sentry Action Protocol:
+            </h4>
+            <div class="remedy-list-box" id="sentryActionList">
+              <div class="remedy-item"><i class="fa-solid fa-bullhorn"></i> <span>Trigger acoustic repeller / solar sirens in Sector 4.</span></div>
+              <div class="remedy-item"><i class="fa-solid fa-lightbulb"></i> <span>Activate perimeter high-lumen floodlights.</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- ===================================================================
+           TAB 4: WATER & SLUICE (Paddy Depth & Pump - Only End Result)
+           =================================================================== -->
+      <div class="app-tab-pane" id="pane-water">
+        
+        <div class="result-card">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);" id="txtWaterTitle">💧 Water & Canal Safety</h3>
+              <p style="font-size: 0.74rem; color: var(--text-muted);" id="txtWaterSub">Live paddy depth, automated gates & pump state</p>
+            </div>
+            <span class="hero-pill" style="background: var(--sky-50); color: var(--sky-600); border: 1px solid rgba(2, 132, 199, 0.3);">Telemetry</span>
+          </div>
+
+          <!-- Visual Circular Water Depth Meter -->
+          <div class="phone-water-gauge-wrapper">
+            <div class="circular-meter">
+              <div class="circular-meter-inner">
+                <span class="meter-val" id="waterDepthDisplay">12.8</span>
+                <span class="meter-lbl">cm</span>
+              </div>
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div>
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;" id="txtDepthStatusLabel">Depth Status</span>
+                <div style="font-size: 0.98rem; font-weight: 800; color: #0284c7;" id="txtWaterSafeStatus">Optimal (&lt; 15 cm)</div>
+              </div>
+
+              <div>
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;" id="txtSluiceGateLabel">Canal Sluice Gate 2</span>
+                <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main);">25% Open (Gravity flow)</div>
+              </div>
+
+              <div>
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;" id="txtTurbinePumpLabel">Emergency Pump</span>
+                <div style="font-size: 0.88rem; font-weight: 700; color: #059669;">Standby / Off</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sector Breakdown List -->
+          <div class="remedy-list-box">
+            <div style="font-weight: 700; margin-bottom: 0.2rem;" id="txtSectorDepthsHeading">Paddock Water Depths:</div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Field A-North (Paddy):</span>
+              <strong style="color: #059669;">5.2 cm (Optimal)</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Field B-East (Corn):</span>
+              <strong style="color: #0284c7;">11.5 cm (Good)</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Field C-River (Lowland):</span>
+              <strong style="color: #d97706;">24.2 cm (Monitored)</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Field D-South (Vegetables):</span>
+              <strong style="color: #059669;">7.8 cm (Optimal)</strong>
+            </div>
+          </div>
+
+          <button class="btn-mobile-primary" onclick="refreshWaterData()" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+            <i class="fa-solid fa-rotate"></i> <span id="btnTxtRefreshWater">Refresh 3-Hour Water Reading</span>
+          </button>
+        </div>
+
+      </div>
+
+
+      <!-- ===================================================================
+           TAB 5: FIELD CAMERA CAPTURES (Recent Photos with End Result)
+           =================================================================== -->
+      <div class="app-tab-pane" id="pane-cam">
+        
+        <div class="result-card">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);" id="txtGalleryTitle">📷 Field Camera Feed</h3>
+              <p style="font-size: 0.74rem; color: var(--text-muted);" id="txtGallerySub">Live edge camera and drone captures</p>
+            </div>
+            <button class="app-action-btn" onclick="fetchRecentCaptures()" style="padding: 0.25rem 0.5rem;">
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+          </div>
+
+          <!-- Photo List with Result Badges -->
+          <div class="phone-gallery-list" id="phoneGalleryContainer">
+            <!-- Dynamically populated or default items -->
+            <div class="phone-gallery-card">
+              <div class="gallery-thumb-mini">
+                <img src="/static/test_images/plant_leaf_healthy.jpg" alt="Leaf Capture">
+              </div>
+              <div class="gallery-meta-mini">
+                <div class="gallery-title-mini">ESP32-CAM North Paddy #01</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">Today 18:30 • Foliar Diagnosis</div>
+                <span class="banner-pill" style="align-self: flex-start; background: #ecfdf5; color: #059669; font-size: 0.68rem;">
+                  <i class="fa-solid fa-circle-check"></i> Healthy Foliage
+                </span>
+              </div>
+            </div>
+
+            <div class="phone-gallery-card">
+              <div class="gallery-thumb-mini">
+                <img src="/static/test_images/intrusion_scene.jpg" alt="Perimeter capture">
+              </div>
+              <div class="gallery-meta-mini">
+                <div class="gallery-title-mini">Trail Camera Sector 4 Fence</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">Today 15:45 • Perimeter Sentry</div>
+                <span class="banner-pill" style="align-self: flex-start; background: #fffbeb; color: #d97706; font-size: 0.68rem;">
+                  <i class="fa-solid fa-triangle-exclamation"></i> Wildlife Detected
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom Mobile Navigation Bar -->
+    <div class="phone-bottom-nav">
+      <button class="nav-tab-btn active" onclick="switchTab('home')" id="tabBtnHome">
+        <i class="fa-solid fa-house"></i>
+        <span id="navLblHome">Home</span>
+      </button>
+
+      <button class="nav-tab-btn" onclick="switchTab('leaf')" id="tabBtnLeaf">
+        <i class="fa-solid fa-leaf"></i>
+        <span id="navLblLeaf">Leaf Doctor</span>
+      </button>
+
+      <button class="nav-tab-btn" onclick="switchTab('sentry')" id="tabBtnSentry">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span id="navLblSentry">Sentry</span>
+      </button>
+
+      <button class="nav-tab-btn" onclick="switchTab('water')" id="tabBtnWater">
+        <i class="fa-solid fa-water"></i>
+        <span id="navLblWater">Water</span>
+      </button>
+
+      <button class="nav-tab-btn" onclick="switchTab('cam')" id="tabBtnCam">
+        <i class="fa-solid fa-camera"></i>
+        <span id="navLblCam">Captures</span>
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    // ==============================================================================
+    // Multilingual Localization for Phone App (English, हिन्दी, ਪੰਜਾਬੀ)
+    // ==============================================================================
+    const USER_I18N = {
+      en: {
+        brand: "Yukti AI",
+        heroBadge: "3-Hour AI Autopilot: Active",
+        heroTitle: "Farm Status: Optimal & Safe",
+        heroDesc: "Soil moisture is balanced. No active crop diseases or perimeter threats detected in your sector.",
+        kpiWater: "Paddy Water",
+        kpiSentry: "Boundary Sentry",
+        kpiLeaf: "Crop Health",
+        kpiCanal: "Canal Sluice",
+        engineTitle: "Latest 3-Hour AI Advisory",
+        engineDesc: "Sweep completed. All sluices are nominal. Field soil moisture is 58.6% (ideal root aeration). No emergency pump required.",
+        homeCheckLeaf: "Check Leaf Now",
+        homeCheckSentry: "Check Perimeter",
+        leafDocTitle: "🍃 Leaf Health Doctor",
+        leafDocSub: "Take or upload a leaf photo for instant remedy",
+        leafPrompt: "Take Photo or Pick from Gallery",
+        leafHint: "Tap here to choose a foliage picture",
+        leafSampleLbl: "Or test with instant field sample:",
+        sampleHealthy: "Healthy Leaf",
+        sampleBlight: "Blight Leaf",
+        sampleRust: "Rust Leaf",
+        diagnoseLeafBtn: "Diagnose Leaf Health",
+        remedyHeading: "🌿 Actionable Farm Prescription:",
+        sentryTitle: "🛡️ Perimeter Sentry",
+        sentrySub: "Automated detection of wild boars, cattle, & trespassers",
+        sentryPrompt: "Upload Boundary Camera Frame",
+        sentryHint: "CCTV capture or trail camera photo",
+        sentrySampleLbl: "Or test with boundary sample:",
+        sampleSentry: "Boundary Camera #104 (Wild Animals)",
+        diagnoseSentryBtn: "Scan Perimeter For Intruders",
+        sentryActionHeading: "🚨 Sentry Action Protocol:",
+        waterTitle: "💧 Water & Canal Safety",
+        waterSub: "Live paddy depth, automated gates & pump state",
+        depthStatus: "Depth Status",
+        sluiceGate: "Canal Sluice Gate 2",
+        turbinePump: "Emergency Pump",
+        sectorDepths: "Paddock Water Depths:",
+        refreshWaterBtn: "Refresh 3-Hour Water Reading",
+        galleryTitle: "📷 Field Camera Feed",
+        gallerySub: "Live edge camera and drone captures",
+        navHome: "Home",
+        navLeaf: "Leaf Doctor",
+        navSentry: "Sentry",
+        navWater: "Water",
+        navCam: "Captures"
+      },
+      hi: {
+        brand: "युक्ति एआई",
+        heroBadge: "3-घंटे एआई ऑटोपायलट: सक्रिय",
+        heroTitle: "खेत स्थिति: सर्वोत्तम एवं सुरक्षित",
+        heroDesc: "मिट्टी की नमी संतुलित है। आपके खेत में कोई सक्रिय फसल रोग या वन्यजीव खतरा नहीं पाया गया।",
+        kpiWater: "धान जल स्तर",
+        kpiSentry: "खेत संतरी",
+        kpiLeaf: "फसल स्वास्थ्य",
+        kpiCanal: "नहर स्लुइस",
+        engineTitle: "नवीनतम 3-घंटे एआई सलाह",
+        engineDesc: "विश्लेषण पूर्ण। सभी गेट सामान्य हैं। मिट्टी की नमी 58.6% है (जड़ों के लिए उत्तम)। आपातकालीन पंप की आवश्यकता नहीं है।",
+        homeCheckLeaf: "पत्ती रोग जांचें",
+        homeCheckSentry: "खेत सुरक्षा जांचें",
+        leafDocTitle: "🍃 पत्ती स्वास्थ्य डॉक्टर",
+        leafDocSub: "तुरंत उपचार के लिए पत्ती की फोटो लें या अपलोड करें",
+        leafPrompt: "फोटो खींचें या गैलरी से चुनें",
+        leafHint: "पत्ती की तस्वीर चुनने के लिए यहाँ टैप करें",
+        leafSampleLbl: "या तैयार नमूना पत्ती जांचें:",
+        sampleHealthy: "स्वस्थ पत्ती",
+        sampleBlight: "झुलसा रोग (ब्लाइट)",
+        sampleRust: "रतुआ रोग (रस्ट)",
+        diagnoseLeafBtn: "पत्ती रोग निदान शुरू करें",
+        remedyHeading: "🌿 किसान उपचार नुस्खा:",
+        sentryTitle: "🛡️ खेत परिधि सुरक्षा",
+        sentrySub: "जंगली सूअर, छुट्टा पशु एवं घुसपैठियों की पहचान",
+        sentryPrompt: "खेत बाउंड्री कैमरा फोटो अपलोड करें",
+        sentryHint: "सीसीटीवी या ट्रेल कैमरा तस्वीर",
+        sentrySampleLbl: "या सुरक्षा नमूना जांचें:",
+        sampleSentry: "बाउंड्री कैमरा #104 (जंगली जानवर)",
+        diagnoseSentryBtn: "खतरे की जांच करें",
+        sentryActionHeading: "🚨 सुरक्षा कार्रवाई निर्देश:",
+        waterTitle: "💧 जल स्तर एवं नहर सुरक्षा",
+        waterSub: "लाइव जल स्तर, स्वचालित गेट एवं पंप स्थिति",
+        depthStatus: "गहराई स्थिति",
+        sluiceGate: "नहर स्लुइस गेट 2",
+        turbinePump: "आपातकालीन पंप",
+        sectorDepths: "खेत-वार जल गहराई:",
+        refreshWaterBtn: "3-घंटे जल स्तर रीफ्रेश करें",
+        galleryTitle: "📷 खेत कैमरा तस्वीरें",
+        gallerySub: "फील्ड कैमरों और ड्रोन से प्राप्त तस्वीरें",
+        navHome: "होम",
+        navLeaf: "पत्ती डॉक्टर",
+        navSentry: "संतरी",
+        navWater: "जल स्तर",
+        navCam: "तस्वीरें"
+      },
+      pa: {
+        brand: "ਯੁਕਤੀ ਏਆਈ",
+        heroBadge: "3-ਘੰਟੇ ਏਆਈ ਆਟੋਪਾਇਲਟ: ਸਰਗਰਮ",
+        heroTitle: "ਖੇਤ ਦੀ ਸਥਿਤੀ: ਉੱਤਮ ਅਤੇ ਸੁਰੱਖਿਅਤ",
+        heroDesc: "ਮਿੱਟੀ ਦੀ ਨਮੀ ਸੰਤੁਲਿਤ ਹੈ। ਤੁਹਾਡੇ ਖੇਤ ਵਿੱਚ ਕੋਈ ਬਿਮਾਰੀ ਜਾਂ ਜੰਗਲੀ ਜੀਵ ਦਾ ਖਤਰਾ ਨਹੀਂ ਹੈ।",
+        kpiWater: "ਕਿਆਰੇ ਦਾ ਪਾਣੀ",
+        kpiSentry: "ਖੇਤ ਰਖਵਾਲਾ",
+        kpiLeaf: "ਫਸਲ ਸਿਹਤ",
+        kpiCanal: "ਨਹਿਰ ਸਲੂਇਸ",
+        engineTitle: "ਤਾਜ਼ਾ 3-ਘੰਟੇ ਏਆਈ ਸਲਾਹ",
+        engineDesc: "ਗੇੜ ਪੂਰਾ ਹੋਇਆ। ਸਾਰੇ ਗੇਟ ਠੀਕ ਕੰਮ ਕਰ ਰਹੇ ਹਨ। ਮਿੱਟੀ ਦੀ ਨਮੀ 58.6% ਹੈ। ਪੰਪ ਚਲਾਉਣ ਦੀ ਲੋੜ ਨਹੀਂ।",
+        homeCheckLeaf: "ਪੱਤੇ ਦੀ ਜਾਂਚ ਕਰੋ",
+        homeCheckSentry: "ਖੇਤ ਸੁਰੱਖਿਆ ਪਰਖੋ",
+        leafDocTitle: "🍃 ਫਸਲ ਡਾਕਟਰ",
+        leafDocSub: "ਇਲਾਜ ਲਈ ਪੱਤੇ ਦੀ ਫੋਟੋ ਲਵੋ ਜਾਂ ਅਪਲੋਡ ਕਰੋ",
+        leafPrompt: "ਫੋਟੋ ਖਿੱਚੋ ਜਾਂ ਗੈਲਰੀ 'ਚੋਂ ਚੁਣੋ",
+        leafHint: "ਪੱਤੇ ਦੀ ਤਸਵੀਰ ਚੁਣਨ ਲਈ ਇੱਥੇ ਦਬਾਓ",
+        leafSampleLbl: "ਜਾਂ ਤਿਆਰ ਨਮੂਨਾ ਪੱਤਾ ਪਰਖੋ:",
+        sampleHealthy: "ਸਿਹਤਮੰਦ ਪੱਤਾ",
+        sampleBlight: "ਝੁਲਸਾ ਰੋਗ (ਬਲਾਈਟ)",
+        sampleRust: "ਕੁੰਗੀ ਰੋਗ (ਰਸਟ)",
+        diagnoseLeafBtn: "ਰੋਗ ਜਾਂਚ ਸ਼ੁਰੂ ਕਰੋ",
+        remedyHeading: "🌿 ਫਸਲ ਇਲਾਜ ਅਤੇ ਉਪਾਅ:",
+        sentryTitle: "🛡️ ਖੇਤ ਦੀ ਰਾਖੀ",
+        sentrySub: "ਜੰਗਲੀ ਸੂਰ, ਆਵਾਰਾ ਪਸ਼ੂ ਅਤੇ ਘੁਸਪੈਠੀਆਂ ਦੀ ਪਛਾਣ",
+        sentryPrompt: "ਖੇਤ ਕੈਮਰਾ ਫੋਟੋ ਅਪਲੋਡ ਕਰੋ",
+        sentryHint: "ਸੀਸੀਟੀਵੀ ਜਾਂ ਕੈਮਰਾ ਤਸਵੀਰ",
+        sentrySampleLbl: "ਜਾਂ ਸੁਰੱਖਿਆ ਨਮੂਨਾ ਪਰਖੋ:",
+        sampleSentry: "ਖੇਤ ਕੈਮਰਾ #104 (ਜੰਗਲੀ ਜਾਨਵਰ)",
+        diagnoseSentryBtn: "ਖਤਰੇ ਦੀ ਜਾਂਚ ਕਰੋ",
+        sentryActionHeading: "🚨 ਸੁਰੱਖਿਆ ਕਾਰਵਾਈ:",
+        waterTitle: "💧 ਪਾਣੀ ਅਤੇ ਨਹਿਰ ਸੁਰੱਖਿਆ",
+        waterSub: "ਅਸਲ ਸਮੇਂ ਦਾ ਪਾਣੀ ਪੱਧਰ, ਗੇਟ ਅਤੇ ਪੰਪ ਸਥਿਤੀ",
+        depthStatus: "ਡੂੰਘਾਈ ਸਥਿਤੀ",
+        sluiceGate: "ਨਹਿਰ ਸਲੂਇਸ ਗੇਟ 2",
+        turbinePump: "ਐਮਰਜੈਂਸੀ ਪੰਪ",
+        sectorDepths: "ਕਿਆਰਾ-ਵਾਰ ਪਾਣੀ ਡੂੰਘਾਈ:",
+        refreshWaterBtn: "ਪਾਣੀ ਰਿਕਾਰਡ ਤਾਜ਼ਾ ਕਰੋ",
+        galleryTitle: "📷 ਖੇਤ ਕੈਮਰਾ ਫੋਟੋਆਂ",
+        gallerySub: "ਖੇਤ ਕੈਮਰਿਆਂ ਤੋਂ ਪ੍ਰਾਪਤ ਤਸਵੀਰਾਂ",
+        navHome: "ਮੁੱਖ",
+        navLeaf: "ਫਸਲ ਡਾਕਟਰ",
+        navSentry: "ਰਾਖੀ",
+        navWater: "ਪਾਣੀ",
+        navCam: "ਤਸਵੀਰਾਂ"
+      }
+    };
+
+    function applyUserLanguage(lang) {
+      if (!USER_I18N[lang]) lang = "en";
+      localStorage.setItem("yukti_language", lang);
+      document.body.setAttribute("data-lang", lang);
+
+      const d = USER_I18N[lang];
+      document.getElementById("appBrandTitle").textContent = d.brand;
+      document.getElementById("txtHeroBadge").textContent = d.heroBadge;
+      document.getElementById("txtHeroTitle").textContent = d.heroTitle;
+      document.getElementById("txtHeroDesc").textContent = d.heroDesc;
+      document.getElementById("kpiTileWaterLbl").textContent = d.kpiWater;
+      document.getElementById("kpiTileSentryLbl").textContent = d.kpiSentry;
+      document.getElementById("kpiTileLeafLbl").textContent = d.kpiLeaf;
+      document.getElementById("kpiTileCanalLbl").textContent = d.kpiCanal;
+      document.getElementById("txtEngineNoticeTitle").textContent = d.engineTitle;
+      document.getElementById("txtEngineNoticeDesc").textContent = d.engineDesc;
+      document.getElementById("btnHomeCheckLeaf").textContent = d.homeCheckLeaf;
+      document.getElementById("btnHomeCheckSentry").textContent = d.homeCheckSentry;
+
+      document.getElementById("txtLeafDocTitle").textContent = d.leafDocTitle;
+      document.getElementById("txtLeafDocSub").textContent = d.leafDocSub;
+      document.getElementById("txtLeafUploadPrompt").textContent = d.leafPrompt;
+      document.getElementById("txtLeafUploadHint").textContent = d.leafHint;
+      document.getElementById("txtLeafSampleLabel").textContent = d.leafSampleLbl;
+      document.getElementById("txtSampleHealthy").textContent = d.sampleHealthy;
+      document.getElementById("txtSampleBlight").textContent = d.sampleBlight;
+      document.getElementById("txtSampleRust").textContent = d.sampleRust;
+      document.getElementById("btnTxtDiagnoseLeaf").textContent = d.diagnoseLeafBtn;
+      document.getElementById("txtRemedyHeading").textContent = d.remedyHeading;
+
+      document.getElementById("txtSentryTitle").textContent = d.sentryTitle;
+      document.getElementById("txtSentrySub").textContent = d.sentrySub;
+      document.getElementById("txtSentryUploadPrompt").textContent = d.sentryPrompt;
+      document.getElementById("txtSentryUploadHint").textContent = d.sentryHint;
+      document.getElementById("txtSentrySampleLabel").textContent = d.sentrySampleLbl;
+      document.getElementById("txtSampleSentryScene").textContent = d.sampleSentry;
+      document.getElementById("btnTxtDiagnoseSentry").textContent = d.diagnoseSentryBtn;
+      document.getElementById("txtSentryActionHeading").textContent = d.sentryActionHeading;
+
+      document.getElementById("txtWaterTitle").textContent = d.waterTitle;
+      document.getElementById("txtWaterSub").textContent = d.waterSub;
+      document.getElementById("txtDepthStatusLabel").textContent = d.depthStatus;
+      document.getElementById("txtSluiceGateLabel").textContent = d.sluiceGate;
+      document.getElementById("txtTurbinePumpLabel").textContent = d.turbinePump;
+      document.getElementById("txtSectorDepthsHeading").textContent = d.sectorDepths;
+      document.getElementById("btnTxtRefreshWater").textContent = d.refreshWaterBtn;
+
+      document.getElementById("txtGalleryTitle").textContent = d.galleryTitle;
+      document.getElementById("txtGallerySub").textContent = d.gallerySub;
+
+      document.getElementById("navLblHome").textContent = d.navHome;
+      document.getElementById("navLblLeaf").textContent = d.navLeaf;
+      document.getElementById("navLblSentry").textContent = d.navSentry;
+      document.getElementById("navLblWater").textContent = d.navWater;
+      document.getElementById("navLblCam").textContent = d.navCam;
+
+      const sel = document.getElementById("userLangSelect");
+      if (sel) sel.value = lang;
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll(".app-tab-pane").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".nav-tab-btn").forEach(b => b.classList.remove("active"));
+
+      const targetPane = document.getElementById("pane-" + tabId);
+      if (targetPane) targetPane.classList.add("active");
+
+      const navBtnMap = {
+        home: "tabBtnHome",
+        leaf: "tabBtnLeaf",
+        sentry: "tabBtnSentry",
+        water: "tabBtnWater",
+        cam: "tabBtnCam"
+      };
+      const activeBtn = document.getElementById(navBtnMap[tabId]);
+      if (activeBtn) activeBtn.classList.add("active");
+
+      // Scroll to top
+      document.querySelector(".phone-body-scroll").scrollTop = 0;
+    }
+
+    // Live Phone Clock
+    function updatePhoneClock() {
+      const now = new Date();
+      const hrs = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById("phoneClock").textContent = `${hrs}:${mins}`;
+    }
+    setInterval(updatePhoneClock, 1000);
+    updatePhoneClock();
+
+    // Theme Toggle
+    const themeBtn = document.getElementById("phoneThemeBtn");
+    const themeIcon = document.getElementById("phoneThemeIcon");
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.body.setAttribute("data-theme", "dark");
+        themeIcon.className = "fa-solid fa-sun";
+        themeIcon.style.color = "#38bdf8";
+        localStorage.setItem("yukti_theme", "dark");
+      } else {
+        document.body.removeAttribute("data-theme");
+        themeIcon.className = "fa-solid fa-moon";
+        themeIcon.style.color = "#f59e0b";
+        localStorage.setItem("yukti_theme", "light");
+      }
+    }
+    themeBtn.addEventListener("click", () => {
+      const isDark = document.body.getAttribute("data-theme") === "dark";
+      applyTheme(isDark ? "light" : "dark");
+    });
+
+    // Frame Toggle on Desktop
+    document.getElementById("toggleFrameBtn").addEventListener("click", () => {
+      document.body.classList.toggle("fullscreen-mode");
+    });
+
+    // Language Change
+    document.getElementById("userLangSelect").addEventListener("change", (e) => {
+      applyUserLanguage(e.target.value);
+    });
+
+    // ==============================================================================
+    // LEAF DOCTOR DIAGNOSTIC LOGIC (Returns ONLY End Result)
+    // ==============================================================================
+    let currentSelectedLeafFile = null;
+    let currentSelectedLeafSample = null;
+
+    document.getElementById("userLeafInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      currentSelectedLeafFile = file;
+      currentSelectedLeafSample = null;
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById("userLeafImg").src = ev.target.result;
+        document.getElementById("userLeafPreviewBox").style.display = "flex";
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function testLeafSample(filename, label) {
+      currentSelectedLeafFile = null;
+      currentSelectedLeafSample = filename;
+      document.getElementById("userLeafImg").src = "/static/test_images/" + filename;
+      document.getElementById("userLeafPreviewBox").style.display = "flex";
+      runLeafDiagnosis();
+    }
+
+    async function runLeafDiagnosis() {
+      if (!currentSelectedLeafFile && !currentSelectedLeafSample) {
+        alert("Please pick or take a leaf photo first!");
+        return;
+      }
+
+      const btn = document.getElementById("btnDiagnoseLeaf");
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Checking leaf health...`;
+      btn.disabled = true;
+
+      try {
+        const formData = new FormData();
+        if (currentSelectedLeafFile) {
+          formData.append("file", currentSelectedLeafFile);
+        } else {
+          formData.append("sample_name", currentSelectedLeafSample);
+        }
+
+        const res = await fetch("/api/predict/plant-health", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Diagnosis failed");
+
+        renderLeafOutcome(data);
+      } catch (err) {
+        alert("Error diagnosing leaf: " + err.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    function renderLeafOutcome(data) {
+      const wrapper = document.getElementById("leafResultWrapper");
+      const banner = document.getElementById("leafBanner");
+      const title = document.getElementById("leafResultTitle");
+      const pill = document.getElementById("leafConfidencePill");
+      const summary = document.getElementById("leafStatusSummary");
+      const remedyList = document.getElementById("leafRemedyList");
+
+      wrapper.style.display = "flex";
+
+      const isHealthy = data.class_name && data.class_name.toLowerCase().includes("healthy");
+      const isBlight = data.class_name && data.class_name.toLowerCase().includes("blight");
+
+      const confRaw = typeof data.confidence === 'number' ? data.confidence : parseFloat(data.confidence || 0);
+      const confPct = confRaw > 1 ? confRaw.toFixed(1) : (confRaw * 100).toFixed(1);
+
+      if (isHealthy) {
+        banner.className = "end-result-banner success";
+        title.textContent = "✅ Healthy Foliage (100% Fit)";
+        pill.textContent = `${confPct}% Accuracy`;
+        summary.textContent = "No fungal or bacterial disease detected on this specimen.";
+        remedyList.innerHTML = `
+          <div class="remedy-item"><i class="fa-solid fa-check"></i> <span>Continue standard irrigation and balanced NPK fertilizer.</span></div>
+          <div class="remedy-item"><i class="fa-solid fa-check"></i> <span>No fungicide spraying required at this time.</span></div>
+        `;
+      } else if (isBlight) {
+        banner.className = "end-result-banner danger";
+        title.textContent = "⚠️ Leaf Blight Detected";
+        pill.textContent = `${confPct}% Accuracy`;
+        summary.textContent = "Early-stage fungal blight lesions identified on crop foliage.";
+        remedyList.innerHTML = `
+          <div class="remedy-item"><i class="fa-solid fa-pills"></i> <span><strong>Treatment:</strong> Spray Copper Oxychloride 50 WP (2.5g / Litre of water).</span></div>
+          <div class="remedy-item"><i class="fa-solid fa-droplet-slash"></i> <span><strong>Irrigation:</strong> Pause overhead sprinkler sprinkling for 48 hours to dry canopy.</span></div>
+          <div class="remedy-item"><i class="fa-solid fa-calendar-check"></i> <span><strong>Follow-up:</strong> Inspect new shoot growth after 4 days.</span></div>
+        `;
+      } else {
+        banner.className = "end-result-banner warning";
+        title.textContent = "⚠️ Common Rust Detected";
+        pill.textContent = `${confPct}% Accuracy`;
+        summary.textContent = "Puccinia rust pustules identified on foliar tissue.";
+        remedyList.innerHTML = `
+          <div class="remedy-item"><i class="fa-solid fa-pills"></i> <span><strong>Treatment:</strong> Apply Mancozeb 75 WP (2g / Litre) or Azoxystrobin.</span></div>
+          <div class="remedy-item"><i class="fa-solid fa-wind"></i> <span><strong>Field Tip:</strong> Ensure proper spacing to facilitate air circulation between plant rows.</span></div>
+        `;
+      }
+
+      // Scroll result into view smoothly
+      wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ==============================================================================
+    // SENTRY INTRUSION CHECK LOGIC (Returns ONLY End Result)
+    // ==============================================================================
+    let currentSelectedSentryFile = null;
+    let currentSelectedSentrySample = null;
+
+    document.getElementById("userSentryInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      currentSelectedSentryFile = file;
+      currentSelectedSentrySample = null;
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById("userSentryImg").src = ev.target.result;
+        document.getElementById("userSentryPreviewBox").style.display = "flex";
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function testSentrySample(filename) {
+      currentSelectedSentryFile = null;
+      currentSelectedSentrySample = filename;
+      document.getElementById("userSentryImg").src = "/static/test_images/" + filename;
+      document.getElementById("userSentryPreviewBox").style.display = "flex";
+      runSentryCheck();
+    }
+
+    async function runSentryCheck() {
+      if (!currentSelectedSentryFile && !currentSelectedSentrySample) {
+        alert("Please select or upload a perimeter camera frame first!");
+        return;
+      }
+
+      const btn = document.getElementById("btnDiagnoseSentry");
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Scanning boundary...`;
+      btn.disabled = true;
+
+      try {
+        const formData = new FormData();
+        if (currentSelectedSentryFile) {
+          formData.append("file", currentSelectedSentryFile);
+        } else {
+          formData.append("sample_name", currentSelectedSentrySample);
+        }
+        formData.append("conf_threshold", "0.35");
+
+        const res = await fetch("/api/predict/intrusion", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Sentry scan failed");
+
+        renderSentryOutcome(data);
+      } catch (err) {
+        alert("Error running sentry scan: " + err.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    function renderSentryOutcome(data) {
+      const wrapper = document.getElementById("sentryResultWrapper");
+      const banner = document.getElementById("sentryBanner");
+      const title = document.getElementById("sentryResultTitle");
+      const pill = document.getElementById("sentryCountPill");
+      const desc = document.getElementById("sentryResultDesc");
+      const actionList = document.getElementById("sentryActionList");
+
+      wrapper.style.display = "flex";
+
+      if (data.annotated_image) {
+        document.getElementById("userSentryImg").src = data.annotated_image;
+        document.getElementById("userSentryPreviewBox").style.display = "flex";
+      }
+
+      const detectionsCount = data.detections_count || 0;
+      if (detectionsCount > 0) {
+        banner.className = "end-result-banner danger";
+        title.textContent = `🚨 Threat Alert: ${data.threat_level || 'ANIMAL DETECTED'}`;
+        pill.textContent = `${detectionsCount} Target(s) Localized`;
+        desc.textContent = `Active intrusion detected in monitored field boundary.`;
+        actionList.innerHTML = `
+          <div class="remedy-item"><i class="fa-solid fa-bullhorn"></i> <span><strong>Acoustic Siren:</strong> Trigger boundary sound repeller / solar horn now.</span></div>
+          <div class="remedy-item"><i class="fa-solid fa-lightbulb"></i> <span><strong>Illumination:</strong> Turn on high-power boundary LED lights in Sector 4.</span></div>
+          <div class="remedy-item"><i class="fa-solid fa-bell"></i> <span><strong>Notification:</strong> SMS alert sent to field guards.</span></div>
+        `;
+      } else {
+        banner.className = "end-result-banner success";
+        title.textContent = "✅ Perimeter Safe & Clear";
+        pill.textContent = "0 Intruders";
+        desc.textContent = "No wild animals or unauthorized human presence in this camera frame.";
+        actionList.innerHTML = `
+          <div class="remedy-item"><i class="fa-solid fa-check"></i> <span>Perimeter is fully secure. No scare action needed.</span></div>
+        `;
+      }
+
+      wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ==============================================================================
+    // REFRESH WATER DATA (Only End Result)
+    // ==============================================================================
+    async function refreshWaterData() {
+      const btn = document.querySelector("#pane-water button");
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Polling 3-Hour Sluices...`;
+      btn.disabled = true;
+
+      try {
+        const res = await fetch("/api/water-levels");
+        const data = await res.json();
+        if (data.sectors && data.sectors.length > 0) {
+          const avg = (data.sectors.reduce((acc, s) => acc + s.water_level_cm, 0) / data.sectors.length).toFixed(1);
+          document.getElementById("waterDepthDisplay").textContent = avg;
+          document.getElementById("kpiTileWaterVal").textContent = `${avg} cm`;
+        }
+      } catch (err) {
+        console.error("Failed to refresh water:", err);
+      } finally {
+        btn.innerHTML = `<i class="fa-solid fa-rotate"></i> Refresh 3-Hour Water Reading`;
+        btn.disabled = false;
+      }
+    }
+
+    // Fetch Recent Shared Captures
+    async function fetchRecentCaptures() {
+      try {
+        const res = await fetch("/api/shared-images");
+        const data = await res.json();
+        const container = document.getElementById("phoneGalleryContainer");
+        if (data.images && data.images.length > 0) {
+          container.innerHTML = data.images.slice(0, 8).map(img => `
+            <div class="phone-gallery-card">
+              <div class="gallery-thumb-mini">
+                <img src="${img.file_url}" alt="Capture">
+              </div>
+              <div class="gallery-meta-mini">
+                <div class="gallery-title-mini">${img.device_id || 'Field Node'}</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">${img.timestamp || 'Today'} • ${img.task_label || 'Field Analysis'}</div>
+                <span class="banner-pill" style="align-self: flex-start; background: #ecfdf5; color: #059669; font-size: 0.68rem;">
+                  <i class="fa-solid fa-circle-check"></i> ${img.diagnosis_result || 'Result Ready'}
+                </span>
+              </div>
+            </div>
+          `).join("");
+        }
+      } catch (e) {
+        console.error("Gallery fetch failed:", e);
+      }
+    }
+
+    // Initialization
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("yukti_theme") || "light";
+      applyTheme(savedTheme);
+
+      const savedLang = localStorage.getItem("yukti_language") || "en";
+      applyUserLanguage(savedLang);
+
+      fetchRecentCaptures();
+    });
+  </script>
+</body>
+</html>

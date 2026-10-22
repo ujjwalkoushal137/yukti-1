@@ -1,0 +1,1 @@
+# SmartAgricultureAI datasets package

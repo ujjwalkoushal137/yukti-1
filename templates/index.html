@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yukti AI - Autonomous Precision Agriculture & Monitoring Dashboard</title>
+  <meta name="description" content="Yukti AI - Next-generation AI platform for plant disease diagnosis, wildlife intrusion sentry, drone crop damage segmentation, and IoT flood early warning.">
+  
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Application CSS (Clean White & Adaptive Theme) -->
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Top Navigation Header -->
+    <header class="top-nav">
+      <div class="brand-section">
+        <div class="brand-logo-icon">
+          <i class="fa-solid fa-seedling"></i>
+        </div>
+        <div class="brand-text">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <h1 data-i18n="brand.title">Yukti AI</h1>
+            <span class="badge badge-info" style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; padding: 0.15rem 0.5rem; letter-spacing: 0.04em;">Admin</span>
+          </div>
+          <p data-i18n="brand.subtitle">Autonomous Precision Agriculture & Field Intelligence</p>
+        </div>
+      </div>
+
+      <div class="nav-status-group">
+        <!-- Switch to Farmer Mobile App -->
+        <a href="/user" class="btn-secondary" style="padding: 0.38rem 0.75rem; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;" title="Open Farmer Phone-Screen Interface">
+          <i class="fa-solid fa-mobile-screen" style="color: #059669;"></i> <span>Farmer View</span>
+        </a>
+
+        <!-- Language Switcher (EN, हिन्दी, ਪੰਜਾਬੀ) -->
+        <div class="lang-selector-group" title="Select Interface Language / भाषा चुनें / ਭਾਸ਼ਾ ਚੁਣੋ">
+          <i class="fa-solid fa-language lang-globe-icon"></i>
+          <select id="langSelect" class="lang-select-dropdown" aria-label="Select Interface Language">
+            <option value="en">English (EN)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+          </select>
+        </div>
+
+        <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Dark / Light Theme" title="Switch Theme (Dark / Light)">
+          <i class="fa-solid fa-moon theme-toggle-icon" id="themeIcon"></i>
+          <span class="theme-toggle-label" id="themeLabel">Dark</span>
+        </button>
+        <div class="automation-nav-badge" title="AI automatically ingests, evaluates, and updates data every 3 hours">
+          <span class="status-dot-pulse"></span>
+          <span class="badge-full-txt" data-i18n="nav.autopilot_full">3-Hour AI Autopilot: <strong>ACTIVE</strong></span>
+          <span class="badge-compact-txt" data-i18n="nav.autopilot_compact">3h AI</span>
+        </div>
+        <div class="clock-display" id="liveClock">--:--:-- UTC</div>
+
+        <!-- Logout Button -->
+        <a href="/logout" class="btn-secondary" style="padding: 0.4rem 0.65rem; font-size: 0.8rem; text-decoration: none; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);" title="Sign Out of Session">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </a>
+      </div>
+    </header>
+
+    <!-- Autonomous 3-Hour Engine Sub-Banner -->
+    <div class="automation-banner">
+      <div class="automation-banner-info">
+        <i class="fa-solid fa-robot" style="font-size: 1.1rem; color: #059669;"></i>
+        <span data-i18n="banner.watcher">AI Autonomous Watcher: Ingesting & processing telemetry every <strong>3 hours</strong></span>
+        <span class="banner-bullet">•</span>
+        <span><span data-i18n="banner.next_sync">Next Automated Ingestion in:</span> <span class="automation-countdown-badge" id="countdownDisplay">02h 59m 50s</span></span>
+      </div>
+      <div>
+        <button class="btn-sync-trigger" id="triggerSyncBtn" title="Run the 3-hour AI ingestion cycle immediately">
+          <i class="fa-solid fa-bolt-lightning"></i> <span data-i18n="banner.trigger_btn">Trigger 3-Hour Sync Now</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-nav-container">
+      <button class="tab-btn active" data-tab="overview">
+        <i class="fa-solid fa-chart-pie tab-icon"></i> <span data-i18n="tab.overview">Overview & Metrics</span>
+      </button>
+      <button class="tab-btn" data-tab="iotGateway">
+        <i class="fa-solid fa-microchip tab-icon"></i> <span data-i18n="tab.iot">IoT Microcontroller & Camera Feed</span>
+      </button>
+      <button class="tab-btn" data-tab="waterLevel">
+        <i class="fa-solid fa-water tab-icon"></i> <span data-i18n="tab.water">Water Level & Hydraulics</span>
+      </button>
+      <button class="tab-btn" data-tab="plantHealth">
+        <i class="fa-solid fa-leaf tab-icon"></i> <span data-i18n="tab.plant">Plant Health Diagnostic</span>
+      </button>
+      <button class="tab-btn" data-tab="intrusion">
+        <i class="fa-solid fa-shield-halved tab-icon"></i> <span data-i18n="tab.intrusion">Intrusion & Wildlife Sentry</span>
+      </button>
+      <button class="tab-btn" data-tab="cropDamage">
+        <i class="fa-solid fa-satellite-dish tab-icon"></i> <span data-i18n="tab.damage">Aerial Damage Segmentation</span>
+      </button>
+      <button class="tab-btn" data-tab="floodWarning">
+        <i class="fa-solid fa-cloud-showers-water tab-icon"></i> <span data-i18n="tab.flood">Flood Risk & Actuation</span>
+      </button>
+      <button class="tab-btn" data-tab="dataLog">
+        <i class="fa-solid fa-database tab-icon"></i> <span data-i18n="tab.datalog">Telemetry & Activity Logs</span>
+      </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- ====================================================================
+           TAB 1: Overview & Analytics (With Prominent Water Level)
+           ==================================================================== -->
+      <section class="tab-pane active" id="overviewTab">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" data-i18n="overview.title">Farm Intelligence Overview</h2>
+            <p class="section-subtitle" data-i18n="overview.subtitle">Real-time situational telemetry, automated water levels, and neural inference performance.</p>
+          </div>
+          <div>
+            <button class="btn-secondary" id="refreshOverviewBtn">
+              <i class="fa-solid fa-rotate"></i> <span data-i18n="overview.refresh_btn">Refresh Telemetry</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Grid with Dedicated Water Level Card -->
+        <div class="kpi-grid">
+          <div class="white-card kpi-card">
+            <div class="kpi-icon-wrapper kpi-icon-green">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div class="kpi-info">
+              <h4>Monitored Area</h4>
+              <div class="kpi-value" id="kpiArea">1,250 Ha</div>
+              <div class="kpi-trend trend-up"><i class="fa-solid fa-circle-check"></i> 4 Sectors Fully Active</div>
+            </div>
+          </div>
+
+          <!-- PROMINENT WATER LEVEL KPI CARD -->
+          <div class="white-card kpi-card" style="border: 2px solid #bae6fd;">
+            <div class="kpi-icon-wrapper kpi-icon-blue">
+              <i class="fa-solid fa-water"></i>
+            </div>
+            <div class="kpi-info">
+              <h4>Paddy Water Level (Avg)</h4>
+              <div class="kpi-value" id="kpiWaterLevel" style="color: #0284c7;">12.8 cm</div>
+              <div class="kpi-trend trend-up" id="kpiWaterStatus"><i class="fa-solid fa-droplet"></i> Optimal Depth (&lt;15 cm)</div>
+            </div>
+          </div>
+
+          <div class="white-card kpi-card">
+            <div class="kpi-icon-wrapper kpi-icon-amber">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="kpi-info">
+              <h4>Active Sentry Alerts</h4>
+              <div class="kpi-value" id="kpiAlerts">2</div>
+              <div class="kpi-trend trend-warning"><i class="fa-solid fa-paw"></i> Wildlife detected in Sec 4</div>
+            </div>
+          </div>
+
+          <div class="white-card kpi-card">
+            <div class="kpi-icon-wrapper kpi-icon-purple">
+              <i class="fa-solid fa-droplet"></i>
+            </div>
+            <div class="kpi-info">
+              <h4>Soil Moisture Mean</h4>
+              <div class="kpi-value" id="kpiMoisture">58.6%</div>
+              <div class="kpi-trend trend-neutral"><i class="fa-solid fa-gauge"></i> Vegetative Root Zone</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Charts & Water Hydraulic Station Row -->
+        <div class="dashboard-grid-2">
+          <!-- Live Telemetry Chart -->
+          <div class="white-card">
+            <div class="section-header" style="margin-bottom: 1rem;">
+              <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--text-main);">
+                <i class="fa-solid fa-chart-line" style="color: #059669; margin-right: 0.5rem;"></i> Water Level (cm) vs Soil Moisture Trend
+              </h3>
+              <span class="badge badge-info"><i class="fa-solid fa-clock-rotate-left"></i> 3-Hr Auto-Synchronized</span>
+            </div>
+            <div style="height: 280px; position: relative;">
+              <canvas id="overviewChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Live Water Level & Hydraulic Station Panel -->
+          <div class="white-card">
+            <div class="section-header" style="margin-bottom: 1rem;">
+              <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--text-main);">
+                <i class="fa-solid fa-gauge" style="color: #0284c7; margin-right: 0.5rem;"></i> Live Water Level Gauge
+              </h3>
+              <span class="badge badge-info">Paddock Depths</span>
+            </div>
+
+            <div class="water-station-grid">
+              <!-- Visual Animated Tank -->
+              <div class="water-tank-wrapper">
+                <div class="water-tank-container">
+                  <div class="water-tank-level" id="tankLevelFill" style="height: 38%;"></div>
+                  <div class="water-tank-ruler">
+                    <span>60cm</span>
+                    <span>45cm</span>
+                    <span>30cm</span>
+                    <span>15cm</span>
+                    <span>0cm</span>
+                  </div>
+                </div>
+                <strong id="tankDepthLabel" style="font-family: var(--font-mono); color: #0284c7; font-size: 0.95rem;">12.8 cm</strong>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">Mean Water Depth</span>
+              </div>
+
+              <!-- Paddock List -->
+              <div class="water-paddock-list" id="overviewPaddockList">
+                <div class="water-paddock-item">
+                  <div>
+                    <strong>Field A-North (Paddy)</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Moisture: 48.2%</div>
+                  </div>
+                  <span class="badge badge-success">5.2 cm</span>
+                </div>
+                <div class="water-paddock-item">
+                  <div>
+                    <strong>Field B-East (Corn)</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Moisture: 56.8%</div>
+                  </div>
+                  <span class="badge badge-info">11.5 cm</span>
+                </div>
+                <div class="water-paddock-item">
+                  <div>
+                    <strong>Field C-River Boundary</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Moisture: 78.4%</div>
+                  </div>
+                  <span class="badge badge-warning">24.2 cm</span>
+                </div>
+                <div class="water-paddock-item">
+                  <div>
+                    <strong>Field D-South Lowland</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Moisture: 51.0%</div>
+                  </div>
+                  <span class="badge badge-success">7.8 cm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Autonomous 3-Hour Cycle Report Card -->
+        <div class="white-card">
+          <div class="section-header" style="margin-bottom: 0.8rem;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--text-main);">
+                <i class="fa-solid fa-microchip" style="color: #059669; margin-right: 0.5rem;"></i> <span data-i18n="report.title">Latest 3-Hour AI Ingestion & Analysis Report</span>
+              </h3>
+              <p class="section-subtitle" id="autoReportTimestamp">Last executed at: --</p>
+            </div>
+            <span class="badge badge-success"><i class="fa-solid fa-check-double"></i> <span data-i18n="report.cycle_done">Cycle Completed</span></span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+            <div style="background: #f8fafc; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+              <span style="font-size: 0.74rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" data-i18n="report.source_label">Data Source Detected</span>
+              <div id="autoReportSource" style="font-weight: 700; color: #0f172a; margin-top: 0.2rem;">IoT Paddock Fleet Auto-Poll</div>
+            </div>
+            <div style="background: #f8fafc; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+              <span style="font-size: 0.74rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" data-i18n="report.records_label">Records Ingested</span>
+              <div id="autoReportRecords" style="font-weight: 700; color: #059669; margin-top: 0.2rem;">4 Sector Packets</div>
+            </div>
+            <div style="background: #f8fafc; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+              <span style="font-size: 0.74rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" data-i18n="report.water_label">Avg Water Depth</span>
+              <div id="autoReportWater" style="font-weight: 700; color: #0284c7; margin-top: 0.2rem;">12.8 cm</div>
+            </div>
+            <div style="background: #f8fafc; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+              <span style="font-size: 0.74rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" data-i18n="report.action_label">Automated Hydraulic Action</span>
+              <div id="autoReportAction" style="font-weight: 600; font-size: 0.82rem; color: #0f172a; margin-top: 0.2rem;">Sluice Gate 2 opened by 30%. Sluices nominal.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================
+           TAB 2: Dedicated Water Level & Hydraulics Tab
+           ==================================================================== -->
+      <section class="tab-pane" id="waterLevelTab">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" data-i18n="water.title">Canal & Paddock Water Level Management</h2>
+            <p class="section-subtitle" data-i18n="water.subtitle">Real-time water depth gauges, sluice gate positions, and automated irrigation canal telemetry.</p>
+          </div>
+          <span class="badge badge-info"><i class="fa-solid fa-water"></i> <span data-i18n="water.badge">Ultrasonic Depth Transducers Online</span></span>
+        </div>
+
+        <div class="dashboard-grid-2">
+          <!-- Multi-Paddock Depth Table -->
+          <div class="white-card">
+            <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #0f172a; margin-bottom: 1rem;">
+              <i class="fa-solid fa-table-list" style="color: #0284c7;"></i> <span data-i18n="water.table_title">Paddock Water Level Breakdown</span>
+            </h3>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="water.col_sector">Sector / Field</th>
+                    <th data-i18n="water.col_level">Water Level (cm)</th>
+                    <th data-i18n="water.col_moisture">Soil Moisture</th>
+                    <th data-i18n="water.col_status">Safety Status</th>
+                    <th data-i18n="water.col_valve">Automated Valve</th>
+                  </tr>
+                </thead>
+                <tbody id="waterLevelTableBody">
+                  <tr>
+                    <td><strong>Field A-North (Paddy)</strong></td>
+                    <td class="mono-cell" style="font-weight: 700; color: #0284c7;">5.2 cm</td>
+                    <td class="mono-cell">48.2%</td>
+                    <td><span class="badge badge-success">Optimal</span></td>
+                    <td>Gravity Flow (Closed)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Field B-East (Corn)</strong></td>
+                    <td class="mono-cell" style="font-weight: 700; color: #0284c7;">11.5 cm</td>
+                    <td class="mono-cell">56.8%</td>
+                    <td><span class="badge badge-info">Normal</span></td>
+                    <td>Drip Line Active</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Field C-River Boundary</strong></td>
+                    <td class="mono-cell" style="font-weight: 700; color: #d97706;">24.2 cm</td>
+                    <td class="mono-cell">78.4%</td>
+                    <td><span class="badge badge-warning">Elevated Risk</span></td>
+                    <td>Sluice 2 Opened (30%)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Field D-South Lowland</strong></td>
+                    <td class="mono-cell" style="font-weight: 700; color: #0284c7;">7.8 cm</td>
+                    <td class="mono-cell">51.0%</td>
+                    <td><span class="badge badge-success">Optimal</span></td>
+                    <td>Gravity Flow (Closed)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Thresholds Key -->
+            <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+              <span class="badge badge-success">&lt; 15 cm: Optimal Vegetative Depth</span>
+              <span class="badge badge-warning">15 - 30 cm: Elevated Waterlogging Warning</span>
+              <span class="badge badge-danger">&gt; 30 cm: Critical Flash Flood Surcharge</span>
+            </div>
+          </div>
+
+          <!-- Canal Sluice & Pump Control -->
+          <div class="white-card">
+            <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #0f172a; margin-bottom: 1rem;">
+              <i class="fa-solid fa-faucet" style="color: #059669;"></i> Automated Sluice Gate Positions
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">
+                  <span>Primary Inflow Sluice (Canal 1)</span>
+                  <strong style="color: #0284c7;">35% Open</strong>
+                </div>
+                <div class="prob-bar-track"><div class="prob-bar-fill" style="width: 35%; background: #0284c7;"></div></div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Discharge Rate: 12.5 L/s</div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">
+                  <span>Emergency Spillway Gate (Canal 2)</span>
+                  <strong style="color: #059669;">20% Open</strong>
+                </div>
+                <div class="prob-bar-track"><div class="prob-bar-fill" style="width: 20%; background: #059669;"></div></div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Discharge Rate: 8.0 L/s</div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">
+                  <span>High-Capacity Turbine Pump 1</span>
+                  <span class="badge badge-success">Standby Ready</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Auto-engages if water depth reaches 28.0 cm</div>
+              </div>
+
+              <div class="action-box">
+                <h5><i class="fa-solid fa-shield-halved"></i> 6-Hour Hydraulic Policy</h5>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">
+                  The 6-hour autonomous engine continuously recalculates canal flow based on anticipated 24h rainfall to prevent root drowning.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================
+           TAB 3: Plant Health Diagnostic
+           ==================================================================== -->
+      <section class="tab-pane" id="plantHealthTab">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" data-i18n="plant.title">Plant Health & Leaf Disease Diagnostic</h2>
+            <p class="section-subtitle" data-i18n="plant.subtitle">Deep learning convolutional classifier trained on corn/maize and horticultural foliar pathology.</p>
+          </div>
+          <span class="badge badge-success"><i class="fa-solid fa-microchip"></i> <span data-i18n="plant.model_badge">CNN Foliar Classifier v2.4</span></span>
+        </div>
+
+        <div class="interactive-workspace">
+          <!-- Left: Input & Upload -->
+          <div class="white-card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.85rem; color: #0f172a;">
+              <i class="fa-solid fa-cloud-arrow-up" style="color: #059669;"></i> Upload Leaf Specimen
+            </h3>
+
+            <div class="upload-dropzone" id="plantDropzone">
+              <i class="fa-solid fa-file-image dropzone-icon"></i>
+              <div class="dropzone-prompt">
+                <h3 data-i18n="plant.dropzone_title">Drag & Drop Leaf Photograph</h3>
+                <p data-i18n="plant.dropzone_hint">Supports High-Res JPG, PNG from field cameras & smartphones</p>
+              </div>
+              <input type="file" id="plantFileInput" class="file-input-hidden" accept="image/*">
+            </div>
+
+            <!-- Pre-loaded Samples -->
+            <div class="sample-gallery">
+              <div class="sample-gallery-title" data-i18n="plant.sample_title">Or Test with 1-Click Samples:</div>
+              <div class="sample-chips">
+                <button class="sample-chip" onclick="loadSample('plant_health', 'plant_leaf_healthy.jpg', 'Healthy Leaf')">
+                  <i class="fa-solid fa-circle-check" style="color: #059669;"></i> <span data-i18n="plant.sample_healthy">Healthy Leaf Sample</span>
+                </button>
+                <button class="sample-chip" onclick="loadSample('plant_health', 'plant_leaf_rust.jpg', 'Rust Infected Leaf')">
+                  <i class="fa-solid fa-biohazard" style="color: #d97706;"></i> <span data-i18n="plant.sample_rust">Rust Infected Leaf</span>
+                </button>
+              </div>
+            </div>
+
+            <button class="btn-primary" id="runPlantHealthBtn">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="plant.analyze_btn">Diagnose Plant Health</span>
+            </button>
+          </div>
+
+          <!-- Right: Diagnostic Report -->
+          <div class="white-card" id="plantResultCard">
+            <div class="result-placeholder" id="plantPlaceholder">
+              <i class="fa-solid fa-microscope icon"></i>
+              <h4 style="color: #0f172a; margin-bottom: 0.25rem;">No Specimen Analyzed Yet</h4>
+              <p>Upload a foliage photograph or pick a demo sample to view instant neural diagnosis.</p>
+            </div>
+
+            <div id="plantResultContent" style="display: none;">
+              <div class="preview-container">
+                <img id="plantPreviewImg" src="" alt="Specimen Preview">
+              </div>
+
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <div>
+                  <span style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Diagnosed Condition</span>
+                  <h3 id="plantConditionTitle" style="font-family: var(--font-heading); font-size: 1.4rem; color: #0f172a;">--</h3>
+                </div>
+                <div style="text-align: right;">
+                  <span id="plantSeverityBadge" class="badge badge-success">Optimal</span>
+                  <div id="plantConfidenceText" style="font-size: 0.82rem; font-family: var(--font-mono); color: #059669; margin-top: 0.25rem; font-weight: 700;">Conf: --%</div>
+                </div>
+              </div>
+
+              <div class="prob-list">
+                <div class="prob-item">
+                  <div class="prob-header"><span>Healthy Foliage</span><span id="probHealthy">0%</span></div>
+                  <div class="prob-bar-track"><div class="prob-bar-fill" id="barHealthy" style="width: 0%;"></div></div>
+                </div>
+                <div class="prob-item">
+                  <div class="prob-header"><span>Leaf Blight</span><span id="probBlight">0%</span></div>
+                  <div class="prob-bar-track"><div class="prob-bar-fill" id="barBlight" style="width: 0%; background: var(--rose-danger);"></div></div>
+                </div>
+                <div class="prob-item">
+                  <div class="prob-header"><span>Powdery Mildew</span><span id="probMildew">0%</span></div>
+                  <div class="prob-bar-track"><div class="prob-bar-fill" id="barMildew" style="width: 0%; background: var(--amber-warning);"></div></div>
+                </div>
+                <div class="prob-item">
+                  <div class="prob-header"><span>Common Rust</span><span id="probRust">0%</span></div>
+                  <div class="prob-bar-track"><div class="prob-bar-fill" id="barRust" style="width: 0%; background: #dc2626;"></div></div>
+                </div>
+              </div>
+
+              <div class="action-box">
+                <h5><i class="fa-solid fa-stethoscope"></i> Agronomic Advisory & Action Protocol</h5>
+                <p id="plantSummaryText" style="font-size: 0.82rem; color: var(--text-body); margin-bottom: 0.6rem;">--</p>
+                <ul class="action-list" id="plantActionList"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================
+           TAB 4: Intrusion & Wildlife Sentry
+           ==================================================================== -->
+      <section class="tab-pane" id="intrusionTab">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" data-i18n="intrusion.title">Perimeter Intrusion & Wildlife Sentry</h2>
+            <p class="section-subtitle" data-i18n="intrusion.subtitle">Real-time object detection detecting wild boars, deer, stray cattle, and unauthorized human intrusions.</p>
+          </div>
+          <span class="badge badge-success"><i class="fa-solid fa-microchip"></i> <span data-i18n="intrusion.model_badge">Sentry Object Detector (YOLO/PyTorch)</span></span>
+        </div>
+
+        <div class="interactive-workspace">
+          <!-- Left: Controls & Upload -->
+          <div class="white-card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.85rem; color: #0f172a;">
+              <i class="fa-solid fa-camera" style="color: #0284c7;"></i> Upload Sentry Camera Image
+            </h3>
+
+            <div class="upload-dropzone" id="intrusionDropzone">
+              <i class="fa-solid fa-binoculars dropzone-icon" style="color: #0284c7;"></i>
+              <div class="dropzone-prompt">
+                <h3 data-i18n="intrusion.dropzone_title">Drag & Drop Camera Frame</h3>
+                <p>CCTV, Trail-Cam, or Perimeter Sensor Capture</p>
+              </div>
+              <input type="file" id="intrusionFileInput" class="file-input-hidden" accept="image/*">
+            </div>
+
+            <!-- Sensitivity Slider -->
+            <div style="margin-top: 1.25rem;">
+              <div class="form-group">
+                <label>
+                  <span>Confidence Threshold</span>
+                  <span class="val-display" id="confThreshDisplay">35%</span>
+                </label>
+                <input type="range" class="range-slider" id="confThreshSlider" min="15" max="85" value="35">
+              </div>
+            </div>
+
+            <!-- Pre-loaded Samples -->
+            <div class="sample-gallery">
+              <div class="sample-gallery-title" data-i18n="intrusion.sample_title">Pre-loaded Field Camera Sample:</div>
+              <div class="sample-chips">
+                <button class="sample-chip" onclick="loadSample('intrusion', 'intrusion_scene.jpg', 'Boundary Camera Feed')">
+                  <i class="fa-solid fa-shield-cat" style="color: #0284c7;"></i> <span data-i18n="intrusion.sample_btn">Field Intrusion Scene</span>
+                </button>
+              </div>
+            </div>
+
+            <button class="btn-primary" id="runIntrusionBtn" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+              <i class="fa-solid fa-crosshairs"></i> <span data-i18n="intrusion.analyze_btn">Run Intruder Detection</span>
+            </button>
+          </div>
+
+          <!-- Right: Visual Detections & Bounding Boxes -->
+          <div class="white-card" id="intrusionResultCard">
+            <div class="result-placeholder" id="intrusionPlaceholder">
+              <i class="fa-solid fa-camera-rotate icon"></i>
+              <h4 style="color: #0f172a; margin-bottom: 0.25rem;">Awaiting Sentry Frame</h4>
+              <p>Upload a camera capture or test with the pre-loaded field boundary frame.</p>
+            </div>
+
+            <div id="intrusionResultContent" style="display: none;">
+              <div class="preview-container">
+                <img id="intrusionAnnotatedImg" src="" alt="Detections Overlay">
+              </div>
+
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <div>
+                  <span style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Sentry Threat Level</span>
+                  <h3 id="intrusionThreatTitle" style="font-family: var(--font-heading); font-size: 1.35rem; color: #0f172a;">--</h3>
+                </div>
+                <div style="text-align: right;">
+                  <span id="intrusionCountBadge" class="badge badge-info">0 Targets</span>
+                </div>
+              </div>
+
+              <div class="table-responsive" style="max-height: 240px; overflow-y: auto;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Entity Class</th>
+                      <th>Confidence</th>
+                      <th>Bounding Box Coordinates</th>
+                    </tr>
+                  </thead>
+                  <tbody id="intrusionTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================
+           TAB 5: Aerial Crop Damage Segmentation
+           ==================================================================== -->
+      <section class="tab-pane" id="cropDamageTab">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" data-i18n="damage.title">Aerial Drone Crop Damage Semantic Segmentation</h2>
+            <p class="section-subtitle" data-i18n="damage.subtitle">Pixel-accurate U-Net segmentation partitioning fields into healthy canopy, pest devastation, and hail/mechanical damage.</p>
+          </div>
+          <span class="badge badge-success"><i class="fa-solid fa-microchip"></i> <span data-i18n="damage.model_badge">Aerial UNet Damage Segmenter</span></span>
+        </div>
+
+        <div class="interactive-workspace">
+          <!-- Left: Upload & Slider Controls -->
+          <div class="white-card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.85rem; color: #0f172a;">
+              <i class="fa-solid fa-plane" style="color: #d97706;"></i> Drone Multispectral Survey
+            </h3>
+
+            <div class="upload-dropzone" id="damageDropzone">
+              <i class="fa-solid fa-helicopter dropzone-icon" style="color: #d97706;"></i>
+              <div class="dropzone-prompt">
+                <h3 data-i18n="damage.dropzone_title">Drag & Drop Drone Aerial Survey</h3>
+                <p>Orthomosaic or RGB field survey</p>
+              </div>
+              <input type="file" id="damageFileInput" class="file-input-hidden" accept="image/*">
+            </div>
+
+            <!-- Pre-loaded Samples -->
+            <div class="sample-gallery">
+              <div class="sample-gallery-title">Pre-loaded Aerial Survey:</div>
+              <div class="sample-chips">
+                <button class="sample-chip" onclick="loadSample('crop_damage', 'crop_aerial.jpg', 'Aerial Drone Field Survey')">
+                  <i class="fa-solid fa-map" style="color: #d97706;"></i> <span data-i18n="damage.sample_btn">Aerial Field Survey</span>
+                </button>
+              </div>
+            </div>
+
+            <button class="btn-primary" id="runDamageBtn" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">
+              <i class="fa-solid fa-chart-area"></i> <span data-i18n="damage.analyze_btn">Run Segmentation & Loss Assessment</span>
+            </button>
+          </div>
+
+          <!-- Right: Segmentation Overlay & Hectare Loss -->
+          <div class="white-card" id="damageResultCard">
+            <div class="result-placeholder" id="damagePlaceholder">
+              <i class="fa-solid fa-map-location-dot icon"></i>
+              <h4 style="color: #0f172a; margin-bottom: 0.25rem;">Awaiting Aerial Survey</h4>
+              <p>Upload a high-altitude drone capture to calculate precise acreage loss distribution.</p>
+            </div>
+
+            <div id="damageResultContent" style="display: none;">
+              <div class="preview-container">
+                <img id="damageCompositeImg" src="" alt="Damage Segmentation Mask">
+              </div>
+
+              <!-- Field Area Distribution -->
+              <div class="form-row-2col" style="margin-bottom: 1rem;">
+                <div class="seg-chip">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="color-indicator" style="background: #059669;"></span>
+                    <span>Healthy Canopy</span>
+                  </div>
+                  <strong id="segHealthyPct" style="color: #059669;">0%</strong>
+                </div>
+                <div class="seg-chip">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="color-indicator" style="background: #dc2626;"></span>
+                    <span>Pest Damage</span>
+                  </div>
+                  <strong id="segPestPct" style="color: #dc2626;">0%</strong>
+                </div>
+                <div class="seg-chip">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="color-indicator" style="background: #d97706;"></span>
+                    <span>Mechanical / Hail</span>
+                  </div>
+                  <strong id="segMechPct" style="color: #d97706;">0%</strong>
+                </div>
+                <div class="seg-chip">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="color-indicator" style="background: #64748b;"></span>
+                    <span>Soil / Furrow</span>
+                  </div>
+                  <strong id="segSoilPct" style="color: var(--text-muted);">0%</strong>
+                </div>
+              </div>
+
+              <!-- Loss Quantification Box -->
+              <div class="action-box">
+                <h5><i class="fa-solid fa-calculator"></i> Acreage Loss & Yield Forecast</h5>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                  <span>Total Damaged Paddock Area:</span>
+                  <strong id="statDamagedHa" style="color: #dc2626;">0.0 Ha</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                  <span>Estimated Harvest Yield Impact:</span>
+                  <strong id="statYieldLoss" style="color: #d97706;">0.0% Penalty</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================
+           TAB 6: Flood Risk & Actuation
+           ==================================================================== -->
+      <section class="tab-pane" id="floodWarningTab">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" data-i18n="flood.title">Flood Risk Early Warning & Sluice Actuation</h2>
+            <p class="section-subtitle" data-i18n="flood.subtitle">Predicts flash waterlogging and actuation status across automated drainage canal sluices.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <a href="/download/sample-csv" class="btn-secondary" title="Download sample sensor CSV">
+              <i class="fa-solid fa-file-arrow-down"></i> <span data-i18n="flood.download_sample">Download Sample CSV</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Mode Toggle (Single Simulation vs Batch CSV Upload) -->
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
+          <button class="btn-secondary active" id="btnModeSliders" style="background: #ecfdf5; border-color: #a7f3d0; color: #065f46;">
+            <i class="fa-solid fa-sliders"></i> Real-Time Parameter Simulation
+          </button>
+          <button class="btn-secondary" id="btnModeCSV">
+            <i class="fa-solid fa-file-csv"></i> Batch CSV Telemetry Ingestion
+          </button>
+        </div>
+
+        <!-- Mode 1: Interactive Sliders Simulation -->
+        <div id="floodSlidersSection">
+          <div class="white-card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #0f172a;">
+              <i class="fa-solid fa-gauge-high" style="color: #059669;"></i> <span data-i18n="flood.simulator_title">Field Hydrological Telemetry Simulator</span>
+            </h3>
+
+            <div class="sensor-controls-grid">
+              <div class="form-group">
+                <label>
+                  <span>Soil Moisture</span>
+                  <span class="val-display" id="valMoisture">88.5%</span>
+                </label>
+                <input type="range" class="range-slider" id="sliderMoisture" min="20" max="100" step="0.5" value="88.5">
+              </div>
+
+              <div class="form-group" style="background: #f0f9ff; padding: 0.5rem; border-radius: 8px; border: 1px solid #bae6fd;">
+                <label>
+                  <span><strong>Water Level (Paddy Depth)</strong></span>
+                  <span class="val-display" id="valWaterLevel" style="color: #0284c7;">28.0 cm</span>
+                </label>
+                <input type="range" class="range-slider" id="sliderWaterLevel" min="0" max="60" step="0.5" value="28">
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <span>Rainfall Rate</span>
+                  <span class="val-display" id="valRainRate">24.5 mm/h</span>
+                </label>
+                <input type="range" class="range-slider" id="sliderRainRate" min="0" max="60" step="0.5" value="24.5">
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <span>24h Cumulative Rain</span>
+                  <span class="val-display" id="valCumulativeRain">65.0 mm</span>
+                </label>
+                <input type="range" class="range-slider" id="sliderCumulativeRain" min="0" max="180" step="1" value="65">
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <span>Drainage Flow Rate</span>
+                  <span class="val-display" id="valDrainage">38.0 L/s</span>
+                </label>
+                <input type="range" class="range-slider" id="sliderDrainage" min="0" max="80" step="1" value="38">
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <span>River Distance</span>
+                  <span class="val-display" id="valRiverDist">120 m</span>
+                </label>
+                <input type="range" class="range-slider" id="sliderRiverDist" min="20" max="500" step="5" value="120">
+              </div>
+            </div>
+
+            <button class="btn-primary" id="runFloodSimulationBtn">
+              <i class="fa-solid fa-bolt"></i> <span data-i18n="flood.run_btn">Evaluate Flood Risk & Compute Directives</span>
+            </button>
+          </div>
+
+          <!-- Simulation Prediction Card -->
+          <div class="white-card" id="floodResultCard">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+              <div>
+                <span style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Early Warning Status</span>
+                <h3 id="floodStatusTitle" style="font-family: var(--font-heading); font-size: 1.45rem; color: #0f172a;">Awaiting Evaluation</h3>
+              </div>
+              <div>
+                <span id="floodStatusBadge" class="badge badge-info">STANDBY</span>
+              </div>
+            </div>
+
+            <div class="prob-list">
+              <div class="prob-item">
+                <div class="prob-header"><span>Normal (Safe)</span><span id="floodProbNormal">--%</span></div>
+                <div class="prob-bar-track"><div class="prob-bar-fill" id="barFloodNormal" style="width: 0%;"></div></div>
+              </div>
+              <div class="prob-item">
+                <div class="prob-header"><span>Warning (Elevated Risk)</span><span id="floodProbWarning">--%</span></div>
+                <div class="prob-bar-track"><div class="prob-bar-fill" id="barFloodWarning" style="width: 0%; background: var(--amber-warning);"></div></div>
+              </div>
+              <div class="prob-item">
+                <div class="prob-header"><span>Critical (Emergency Waterlogging)</span><span id="floodProbCritical">--%</span></div>
+                <div class="prob-bar-track"><div class="prob-bar-fill" id="barFloodCritical" style="width: 0%; background: var(--rose-danger);"></div></div>
+              </div>
+            </div>
+
+            <div class="action-box">
+              <h5><i class="fa-solid fa-faucet-drip"></i> Automated Drainage Actuation Protocol</h5>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                <span>Sluice & Pump Control:</span>
+                <strong id="floodPumpAction" style="color: #059669;">--</strong>
+              </div>
+              <p id="floodAdvisoryText" style="font-size: 0.82rem; color: var(--text-body);">Click the evaluate button above to run real-time inference.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode 2: Batch CSV Upload Section -->
+        <div id="floodCSVSection" style="display: none;">
+          <div class="white-card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.85rem; color: #0f172a;">
+              <i class="fa-solid fa-file-csv" style="color: #059669;"></i> Upload IoT Sensor Telemetry CSV
+            </h3>
+
+            <div class="upload-dropzone" id="csvDropzone">
+              <i class="fa-solid fa-table dropzone-icon"></i>
+              <div class="dropzone-prompt">
+                <h3>Drag & Drop Telemetry CSV File</h3>
+                <p>Upload sensor records from field loggers • CSV with soil moisture, water level, rain</p>
+              </div>
+              <input type="file" id="csvFileInput" class="file-input-hidden" accept=".csv">
+            </div>
+
+            <div style="margin-top: 1rem; display: flex; gap: 0.75rem;">
+              <button class="btn-primary" id="runBatchCSVBtn" style="margin-top: 0;">
+                <i class="fa-solid fa-play"></i> Ingest & Batch Evaluate Telemetry
+              </button>
+            </div>
+          </div>
+
+          <!-- Batch Evaluation Results Table -->
+          <div class="white-card" id="csvResultCard" style="display: none;">
+            <div class="section-header" style="margin-bottom: 1rem;">
+              <div>
+                <h3 style="font-size: 1.1rem; color: #0f172a;">Batch Ingestion Evaluation Results</h3>
+                <p class="section-subtitle" id="csvSummaryText">-- records evaluated</p>
+              </div>
+              <div style="display: flex; gap: 0.5rem;" id="csvBadgesGroup"></div>
+            </div>
+
+            <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Field ID</th>
+                    <th>Moisture (%)</th>
+                    <th>Water Level (cm)</th>
+                    <th>Rain (mm/h)</th>
+                    <th>Predicted Risk</th>
+                    <th>Critical Prob</th>
+                  </tr>
+                </thead>
+                <tbody id="csvTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================
+           TAB 7: Telemetry Data & Activity Logs
+           ==================================================================== -->
+      <section class="tab-pane" id="dataLogTab">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" data-i18n="logs.title">Telemetry Records & Audit Logs</h2>
+            <p class="section-subtitle" data-i18n="logs.subtitle">Full historical activity log of user uploads, automated 3-hour cycles, and IoT sensor records.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn-secondary" id="clearLogBtn">
+              <i class="fa-solid fa-trash-can"></i> <span data-i18n="logs.clear_btn">Clear Activity History</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Activity History Log Table -->
+        <div class="white-card" style="margin-bottom: 2rem;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-main);">
+            <i class="fa-solid fa-clock-rotate-left" style="color: #059669;"></i> <span data-i18n="logs.activity_title">Unified AI Inference & Autonomous Cycle Activity Stream</span>
+          </h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Module</th>
+                  <th>Action / Source</th>
+                  <th>Diagnosis / Result Summary</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="activityLogTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Stored IoT Field Records Table -->
+        <div class="white-card">
+          <div class="section-header" style="margin-bottom: 1rem;">
+            <div>
+              <h3 style="font-size: 1.1rem; color: var(--text-main);">
+                <i class="fa-solid fa-server" style="color: #0284c7;"></i> Persistent Field Sensor Telemetry (Dataset View)
+              </h3>
+              <p class="section-subtitle">Automatically updated every 3 hours into flood_monitoring/sensor_records.csv</p>
+            </div>
+          </div>
+          <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Field ID</th>
+                  <th>Soil Moisture (%)</th>
+                  <th>Water Level (cm)</th>
+                  <th>Rain (mm/h)</th>
+                  <th>24h Rain (mm)</th>
+                  <th>Temp (°C)</th>
+                  <th>Humidity (%)</th>
+                  <th>Drainage (L/s)</th>
+                  <th>Risk Code</th>
+                </tr>
+              </thead>
+              <tbody id="sensorRecordsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 8: IoT Microcontroller Gateway & Image Sharing Feed
+           ==================================================================== -->
+      <section class="tab-pane" id="iotGatewayTab">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Microcontroller Gateway & Camera Feed Hub</h2>
+            <p class="section-subtitle">Real-time bidirectional API hub for field microcontrollers (ESP32 / Arduino / LoRa) and remote cameras with automated 3-hour AI inference.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <div class="iot-header-badge">
+              <span class="endpoint-tag">POST</span> <code>/api/iot/feed</code>
+            </div>
+            <div class="iot-header-badge">
+              <span class="endpoint-tag">POST</span> <code>/api/iot/image-feed</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hugging Face Space & Cloud Endpoint Information Box -->
+        <div class="white-card" style="margin-bottom: 2rem; border-left: 4px solid #059669;">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-size: 1.05rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                <i class="fa-solid fa-cloud-arrow-up" style="color: #059669;"></i> Hugging Face Space & Remote Field Integration
+              </h3>
+              <p style="font-size: 0.84rem; color: var(--text-muted); max-width: 800px; line-height: 1.5;">
+                When hosted on Hugging Face Spaces (port <strong>7860</strong>), point your field microcontrollers and cameras directly to:
+                <br>
+                <code style="background: var(--bg-subtle); padding: 0.2rem 0.5rem; border-radius: 4px; color: var(--emerald-primary); font-family: var(--font-mono); font-weight: 600;">
+                  https://&lt;your-username&gt;-&lt;your-space-name&gt;.hf.space/api/iot/feed
+                </code>
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <span class="badge badge-success"><i class="fa-solid fa-check"></i> Docker Ready</span>
+              <span class="badge badge-info"><i class="fa-solid fa-server"></i> Port 7860 Auto-Bind</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="interactive-workspace" style="margin-bottom: 2rem;">
+          <!-- Telemetry Simulator & Test Bench -->
+          <div class="white-card">
+            <h3 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-tower-broadcast" style="color: #0284c7;"></i> <span data-i18n="iot.sim_title">Microcontroller Telemetry Test Bench</span>
+            </h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;" data-i18n="iot.sim_desc">
+              Simulate an incoming sensor packet from an ESP32 or LoRa gateway to test AI risk prediction and actuator instructions.
+            </p>
+
+            <form id="iotTelemetryForm" onsubmit="return false;">
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label data-i18n="iot.dev_id">Device ID</label>
+                  <input type="text" class="input-text" id="iotDeviceId" value="ESP32-PADDY-NODE-01">
+                </div>
+                <div class="form-group">
+                  <label data-i18n="iot.sector">Monitored Sector</label>
+                  <select class="input-select" id="iotFieldId">
+                    <option value="FIELD_01">FIELD_01 (Field A-North Paddy)</option>
+                    <option value="FIELD_02">FIELD_02 (Field B-East Corn)</option>
+                    <option value="FIELD_03">FIELD_03 (Field C-River Boundary)</option>
+                    <option value="FIELD_04">FIELD_04 (Field D-South Lowland)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label><span data-i18n="iot.water_level">Water Level:</span> <span class="val-display" id="iotWaterVal">14.5 cm</span></label>
+                  <input type="range" class="range-slider" id="iotWaterLevel" min="0" max="45" step="0.5" value="14.5">
+                </div>
+                <div class="form-group">
+                  <label><span data-i18n="iot.soil_moisture">Soil Moisture:</span> <span class="val-display" id="iotMoistureVal">65 %</span></label>
+                  <input type="range" class="range-slider" id="iotSoilMoisture" min="10" max="98" step="1" value="65">
+                </div>
+              </div>
+
+              <div class="form-row-2col" style="margin-bottom: 1.25rem;">
+                <div class="form-group">
+                  <label><span data-i18n="iot.rainfall">Rainfall (mm/h):</span> <span class="val-display" id="iotRainVal">2.5 mm/h</span></label>
+                  <input type="range" class="range-slider" id="iotRainfall" min="0" max="40" step="0.5" value="2.5">
+                </div>
+                <div class="form-group">
+                  <label data-i18n="iot.temp">Temperature (°C)</label>
+                  <input type="number" class="input-text" id="iotTemp" value="27.0" step="0.5">
+                </div>
+              </div>
+
+              <button class="btn-primary" id="btnSubmitIotFeed" style="width: 100%;">
+                <i class="fa-solid fa-paper-plane"></i> <span data-i18n="iot.send_btn">Transmit Telemetry (POST /api/iot/feed)</span>
+              </button>
+            </form>
+
+            <!-- Live Directives Returned to Microcontroller -->
+            <div id="iotFeedResponseWrapper" style="display: none; margin-top: 1.25rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+              <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;" data-i18n="iot.directives_title">
+                ⚡ Returned Actuator Directives:
+              </h4>
+              <div class="directive-card-grid">
+                <div class="directive-item">
+                  <span class="directive-label" data-i18n="iot.risk_status">AI Risk Status</span>
+                  <span class="directive-val" id="resRiskLabel">NORMAL</span>
+                </div>
+                <div class="directive-item">
+                  <span class="directive-label" data-i18n="iot.pump_directive">Pump Directives</span>
+                  <span class="directive-val" id="resPumpCmd">IDLE</span>
+                </div>
+                <div class="directive-item">
+                  <span class="directive-label" data-i18n="iot.sluice_gate">Sluice Gate</span>
+                  <span class="directive-val" id="resSluicePos">25%</span>
+                </div>
+              </div>
+              <div style="margin-top: 0.75rem; font-size: 0.82rem; color: var(--text-body); background: var(--bg-subtle); padding: 0.6rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                <strong>Advisory:</strong> <span id="resAdvisory">Nominal gravity outflow.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Remote Field Camera & Image Sharing API -->
+          <div class="white-card">
+            <h3 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-camera-retro" style="color: #059669;"></i> <span data-i18n="iot.camera_portal_title">Field Camera Feed & Sharing Portal</span>
+            </h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;" data-i18n="iot.camera_portal_desc">
+              Upload field captures from ESP32-CAM, drones, or trail cameras. Yukti AI analyzes the image, generates an instant shareable link, and preserves public viewability.
+            </p>
+
+            <form id="iotCameraForm" onsubmit="return false;">
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label data-i18n="iot.camera_id">Camera Node ID</label>
+                  <input type="text" class="input-text" id="cameraDeviceId" value="ESP32-CAM-NORTH-01">
+                </div>
+                <div class="form-group">
+                  <label data-i18n="iot.mission">Analysis Mission</label>
+                  <select class="input-select" id="cameraTaskSelect">
+                    <option value="plant_health" data-i18n="iot.mission_plant">Foliar Diagnostic (Plant Health)</option>
+                    <option value="intrusion" data-i18n="iot.mission_intrusion">Perimeter Sentry (Intrusion)</option>
+                    <option value="crop_damage" data-i18n="iot.mission_damage">Aerial Survey (Crop Damage)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Camera Dropzone -->
+              <div class="dropzone" id="cameraDropzone" style="min-height: 140px; margin-bottom: 1rem;">
+                <i class="fa-solid fa-cloud-arrow-up dropzone-icon" style="font-size: 1.8rem;"></i>
+                <div class="dropzone-text" style="font-size: 0.85rem;" data-i18n="iot.camera_dropzone">
+                  Drag camera image here or browse
+                </div>
+                <div class="dropzone-hint" style="font-size: 0.72rem;" data-i18n="iot.camera_hint">ESP32-CAM JPEG, drone photo, or trail cam capture</div>
+                <input type="file" id="cameraFileInput" accept="image/*" style="display: none;">
+              </div>
+
+              <div id="cameraPreviewThumbnailWrapper" style="display: none; align-items: center; gap: 0.75rem; margin-bottom: 1rem; background: var(--bg-subtle); padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                <img id="cameraPreviewThumb" src="" alt="Capture Preview" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+                <span id="cameraFileName" style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--text-main); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">camera_photo.jpg</span>
+                <button type="button" class="btn-secondary" id="btnRemoveCameraFile" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+
+              <button class="btn-primary" id="btnUploadCameraFeed" style="width: 100%;">
+                <i class="fa-solid fa-share-nodes"></i> <span data-i18n="iot.share_btn">Transmit & Generate Shareable Link</span>
+              </button>
+            </form>
+
+            <!-- Shareable Result Link Card -->
+            <div id="cameraShareResultBox" style="display: none;" class="share-result-card">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Image Shared & Analyzed</span>
+                <span id="shareDiagnosisBadge" style="font-size: 0.8rem; font-weight: 700; color: #059669;">Leaf Blight (94.2%)</span>
+              </div>
+              <div class="share-link-group">
+                <input type="text" class="share-url-input" id="shareUrlDisplay" readonly value="">
+                <button class="btn-copy-link" id="btnCopyShareUrl"><i class="fa-solid fa-copy"></i> Copy</button>
+                <a href="#" target="_blank" class="btn-secondary" id="btnOpenShareUrl" style="padding: 0.6rem 0.85rem;"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Microcontroller Client Firmware & Code Generator -->
+        <div class="white-card" style="margin-bottom: 2rem;">
+          <h3 style="font-size: 1.15rem; color: var(--text-main); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-code" style="color: #7c3aed;"></i> Microcontroller Code Library (ESP32 / Arduino / Python)
+          </h3>
+          <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Copy-ready, production-grade firmware examples for your field hardware to push telemetry and photos directly to Yukti AI.
+          </p>
+
+          <div class="code-tabs-wrapper">
+            <div class="code-tab-header">
+              <div class="code-tab-btns">
+                <button class="code-tab-btn active" data-code="esp32">ESP32 (C++ / Arduino IDE)</button>
+                <button class="code-tab-btn" data-code="python">Python Edge Gateway (RPi / Jetson)</button>
+                <button class="code-tab-btn" data-code="esp32cam">ESP32-CAM Image Upload (C++)</button>
+                <button class="code-tab-btn" data-code="curl">cURL & REST API</button>
+              </div>
+              <button class="btn-copy-code" id="btnCopySnippet"><i class="fa-solid fa-copy"></i> Copy Code</button>
+            </div>
+
+            <!-- Snippet 1: ESP32 C++ -->
+            <div class="code-block-content active" id="codeSnippet-esp32">
+<pre>// ==============================================================================
+// Yukti AI - ESP32 Field Telemetry Transmitter
+// Board: ESP32 Dev Module | Arduino IDE 2.x
+// ==============================================================================
+#include &lt;WiFi.h&gt;
+#include &lt;HTTPClient.h&gt;
+#include &lt;ArduinoJson.h&gt;
+
+const char* ssid = "YOUR_WIFI_SSID";
+const char* password = "YOUR_WIFI_PASS";
+
+// Point to your Hugging Face Space URL or local IP:
+// Example: "https://your-user-yukti-ai.hf.space/api/iot/feed"
+const char* serverUrl = "https://your-space.hf.space/api/iot/feed";
+
+const int WATER_SENSOR_PIN = 34; // Analog depth probe
+const int RELAY_PUMP_PIN = 23;   // Pump motor relay
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(RELAY_PUMP_PIN, OUTPUT);
+  digitalWrite(RELAY_PUMP_PIN, LOW);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi Connected! IP: " + WiFi.localIP().toString());
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(serverUrl);
+    http.addHeader("Content-Type", "application/json");
+
+    int rawAdc = analogRead(WATER_SENSOR_PIN);
+    float waterLevelCm = (rawAdc / 4095.0) * 35.0; // 0-35 cm
+    float soilMoisturePct = 62.0;
+
+    StaticJsonDocument&lt;256&gt; doc;
+    doc["device_id"] = "ESP32-NODE-FIELD-01";
+    doc["field_id"] = "FIELD_01";
+    doc["water_level_cm"] = waterLevelCm;
+    doc["soil_moisture_pct"] = soilMoisturePct;
+    doc["rainfall_mm_per_hr"] = 1.2;
+
+    String jsonPayload;
+    serializeJson(doc, jsonPayload);
+
+    int httpCode = http.POST(jsonPayload);
+    if (httpCode &gt; 0) {
+      String response = http.getString();
+      Serial.println("Response: " + response);
+
+      StaticJsonDocument&lt;512&gt; resDoc;
+      deserializeJson(resDoc, response);
+
+      // Actuator directives directly from AI model
+      const char* pumpCommand = resDoc["actuator_directives"]["pump_command"];
+      if (strcmp(pumpCommand, "DISCHARGE_100_PERCENT") == 0 || strcmp(pumpCommand, "AUXILIARY_PUMP_1") == 0) {
+        digitalWrite(RELAY_PUMP_PIN, HIGH); // Engage pump
+        Serial.println("AI DIRECTIVE: Pump ENGAGED!");
+      } else {
+        digitalWrite(RELAY_PUMP_PIN, LOW);  // Disengage pump
+      }
+    }
+    http.end();
+  }
+
+  // Transmit telemetry every 3 hours
+  delay(10800000); // 3 hours in milliseconds
+}
+</pre>
+            </div>
+
+            <!-- Snippet 2: Python -->
+            <div class="code-block-content" id="codeSnippet-python">
+<pre># ==============================================================================
+# Yukti AI - Python Edge Gateway (Raspberry Pi / Jetson / Field Station)
+# ==============================================================================
+import time
+import requests
+
+SERVER_URL = "https://your-space.hf.space/api/iot/feed"
+
+def send_field_telemetry():
+    payload = {
+        "device_id": "RPI-GATEWAY-SECTOR-4",
+        "field_id": "FIELD_01",
+        "water_level_cm": 15.2,
+        "soil_moisture_pct": 68.0,
+        "rainfall_mm_per_hr": 3.4,
+        "cumulative_rain_24h_mm": 18.5,
+        "temperature_c": 26.5,
+        "humidity_pct": 74.0,
+        "drainage_flow_rate_lps": 8.0,
+        "river_distance_m": 90.0
+    }
+
+    try:
+        response = requests.post(SERVER_URL, json=payload, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            directives = data.get("actuator_directives", {})
+            print(f"[✓] Transmitted! Risk: {data['prediction']['risk_label']}")
+            print(f"    Pump Directive: {directives.get('pump_command')}")
+            print(f"    Sluice Position: {directives.get('sluice_position_pct')}%")
+        else:
+            print(f"[!] Server returned status {response.status_code}: {response.text}")
+    except Exception as e:
+        print(f"[X] Transmission failed: {e}")
+
+if __name__ == "__main__":
+    while True:
+        send_field_telemetry()
+        # Ingest every 3 hours (10800 seconds)
+        time.sleep(3 * 3600)
+</pre>
+            </div>
+
+            <!-- Snippet 3: ESP32-CAM -->
+            <div class="code-block-content" id="codeSnippet-esp32cam">
+<pre>// ==============================================================================
+// Yukti AI - ESP32-CAM Remote Image Uploader
+// Captures snapshot and pushes multipart HTTP POST to /api/iot/image-feed
+// ==============================================================================
+#include "esp_camera.h"
+#include &lt;WiFi.h&gt;
+#include &lt;HTTPClient.h&gt;
+
+const char* serverUrl = "https://your-space.hf.space/api/iot/image-feed";
+
+void captureAndSendImage() {
+  camera_fb_t* fb = esp_camera_fb_get();
+  if (!fb) {
+    Serial.println("Camera capture failed!");
+    return;
+  }
+
+  HTTPClient http;
+  http.begin(serverUrl);
+
+  String boundary = "----WebKitFormBoundaryYuktiAI";
+  http.addHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+  String head = "--" + boundary + "\r\n" +
+                "Content-Disposition: form-data; name=\"device_id\"\r\n\r\n" +
+                "ESP32-CAM-01\r\n" +
+                "--" + boundary + "\r\n" +
+                "Content-Disposition: form-data; name=\"task\"\r\n\r\n" +
+                "plant_health\r\n" +
+                "--" + boundary + "\r\n" +
+                "Content-Disposition: form-data; name=\"file\"; filename=\"photo.jpg\"\r\n" +
+                "Content-Type: image/jpeg\r\n\r\n";
+  String tail = "\r\n--" + boundary + "--\r\n";
+
+  size_t totalLen = head.length() + fb-&gt;len + tail.length();
+  uint8_t* buffer = (uint8_t*)malloc(totalLen);
+  memcpy(buffer, head.c_str(), head.length());
+  memcpy(buffer + head.length(), fb-&gt;buf, fb-&gt;len);
+  memcpy(buffer + head.length() + fb-&gt;len, tail.c_str(), tail.length());
+
+  int httpCode = http.POST(buffer, totalLen);
+  if (httpCode &gt; 0) {
+    Serial.println("Upload success: " + http.getString());
+  }
+  free(buffer);
+  esp_camera_fb_return(fb);
+  http.end();
+}
+</pre>
+            </div>
+
+            <!-- Snippet 4: cURL -->
+            <div class="code-block-content" id="codeSnippet-curl">
+<pre># ==============================================================================
+# 1. Transmit Sensor Telemetry Feed (JSON)
+# ==============================================================================
+curl -X POST https://your-space.hf.space/api/iot/feed \
+  -H "Content-Type: application/json" \
+  -d '{
+    "device_id": "ESP32-TEST-NODE",
+    "field_id": "FIELD_01",
+    "water_level_cm": 16.5,
+    "soil_moisture_pct": 68.0,
+    "rainfall_mm_per_hr": 4.2
+  }'
+
+# ==============================================================================
+# 2. Upload Camera Image & Generate Public Share Link
+# ==============================================================================
+curl -X POST https://your-space.hf.space/api/iot/image-feed \
+  -F "file=@field_leaf_capture.jpg" \
+  -F "device_id=CAM_FIELD_01" \
+  -F "task=plant_health"
+</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Shared Field Captures Gallery -->
+        <div class="white-card">
+          <div class="section-header" style="margin-bottom: 0.75rem;">
+            <div>
+              <h3 style="font-size: 1.15rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-images" style="color: #0284c7;"></i> <span data-i18n="iot.gallery_title">Shared Field Captures & Remote Camera Gallery</span>
+              </h3>
+              <p class="section-subtitle" data-i18n="iot.gallery_subtitle">Photographs transmitted by edge cameras with automated AI foliar and intrusion diagnoses.</p>
+            </div>
+            <div>
+              <button class="btn-secondary" id="refreshSharedGalleryBtn">
+                <i class="fa-solid fa-rotate"></i> <span data-i18n="iot.refresh_gallery">Refresh Gallery</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="shared-gallery-grid" id="sharedGalleryContainer">
+            <!-- Dynamically populated by JavaScript -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Multilingual i18n Translations (English, हिन्दी, ਪੰਜਾਬੀ) -->
+  <script src="/static/js/translations.js"></script>
+  <!-- Application Logic -->
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

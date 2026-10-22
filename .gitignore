@@ -1,0 +1,28 @@
+# Virtual Environment
+.venv/
+env/
+venv/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Local Tools & Temporary Files
+tools/
+scratch/
+tunnel_url.txt
+*.log
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Raw Image Datasets (excluded per user request)
+crop_damage/
+intrusion_detection/
+plant_health/
+incoming_telemetry/
+test_images/

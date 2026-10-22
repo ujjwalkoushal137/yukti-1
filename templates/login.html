@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yukti AI - Login & Secure Access</title>
+  <meta name="description" content="Yukti AI - Secure Dual-Interface Access for Field Farmers and System Administrators">
+
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --emerald-600: #059669;
+      --emerald-500: #10b981;
+      --emerald-50: #ecfdf5;
+      --sky-600: #0284c7;
+      --sky-50: #f0f9ff;
+      --font-body: 'Inter', sans-serif;
+      --font-heading: 'Outfit', sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #090d16;
+      --bg-card: #111827;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #1f2937;
+      --emerald-50: rgba(16, 185, 129, 0.12);
+      --sky-50: rgba(2, 132, 199, 0.12);
+    }
+
+    body[data-lang="hi"] {
+      font-family: 'Noto Sans Devanagari', var(--font-body);
+    }
+    body[data-lang="hi"] h1, body[data-lang="hi"] h2, body[data-lang="hi"] h3 {
+      font-family: 'Noto Sans Devanagari', var(--font-heading);
+    }
+
+    body[data-lang="pa"] {
+      font-family: 'Noto Sans Gurmukhi', var(--font-body);
+    }
+    body[data-lang="pa"] h1, body[data-lang="pa"] h2, body[data-lang="pa"] h3 {
+      font-family: 'Noto Sans Gurmukhi', var(--font-heading);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(2, 132, 199, 0.08) 0%, transparent 50%);
+      transition: background-color 0.3s ease;
+    }
+
+    .top-controls {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .control-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 9999px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
+    }
+
+    .control-pill:hover {
+      border-color: var(--emerald-500);
+      transform: translateY(-1px);
+    }
+
+    .lang-dropdown-select {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 2.25rem;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 20px 25px -5px rgba(0, 0, 0, 0.04);
+      animation: fadeInScale 0.35s ease-out;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.97) translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .brand-icon-wrapper {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 0.85rem;
+      background: linear-gradient(135deg, var(--emerald-600) 0%, var(--emerald-500) 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.28);
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+      line-height: 1.4;
+    }
+
+    .role-badge-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 0.65rem;
+    }
+
+    .role-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      background: var(--emerald-50);
+      color: var(--emerald-600);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .role-pill.admin-pill {
+      background: var(--sky-50);
+      color: var(--sky-600);
+      border-color: rgba(2, 132, 199, 0.3);
+    }
+
+    .alert-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    [data-theme="dark"] .alert-error {
+      background: rgba(185, 28, 28, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.6rem;
+      background: var(--bg-page);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--emerald-500);
+      background: var(--bg-card);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 0.85rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 0.35rem;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background: linear-gradient(135deg, var(--emerald-600) 0%, var(--emerald-500) 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.32);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.42);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .divider-row {
+      display: flex;
+      align-items: center;
+      margin: 1.5rem 0 1.25rem;
+      gap: 0.75rem;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    .quick-login-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .quick-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--bg-page);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .quick-btn:hover {
+      border-color: var(--emerald-500);
+      background: var(--emerald-50);
+      transform: translateY(-1px);
+    }
+
+    .quick-btn.admin-quick:hover {
+      border-color: var(--sky-600);
+      background: var(--sky-50);
+    }
+
+    .quick-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .quick-btn-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      background: var(--emerald-50);
+      color: var(--emerald-600);
+    }
+
+    .admin-quick .quick-btn-icon {
+      background: var(--sky-50);
+      color: var(--sky-600);
+    }
+
+    .quick-title {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .quick-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .quick-arrow {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .footer-help {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .footer-help code {
+      background: var(--bg-page);
+      border: 1px solid var(--border-color);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: monospace;
+      color: var(--emerald-600);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Right Utility Controls (Language & Theme) -->
+  <div class="top-controls">
+    <div class="control-pill" title="Choose Interface Language">
+      <i class="fa-solid fa-language" style="color: var(--emerald-600);"></i>
+      <select id="langSelectLogin" class="lang-dropdown-select" aria-label="Choose Language">
+        <option value="en">English (EN)</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+        <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+      </select>
+    </div>
+
+    <button class="control-pill" id="themeToggleBtn" aria-label="Toggle Theme">
+      <i class="fa-solid fa-moon" id="themeIcon" style="color: #f59e0b;"></i>
+      <span id="themeLabel">Dark</span>
+    </button>
+  </div>
+
+  <!-- Central Login Card -->
+  <div class="login-container">
+    <div class="brand-header">
+      <div class="brand-icon-wrapper">
+        <i class="fa-solid fa-seedling"></i>
+      </div>
+      <h1 class="brand-title" id="txtTitle">Yukti AI</h1>
+      <p class="brand-subtitle" id="txtSubtitle">Autonomous Precision Agriculture & Field Intelligence</p>
+      
+      <div class="role-badge-row">
+        <span class="role-pill" id="txtPillUser"><i class="fa-solid fa-mobile-screen"></i> Farmer Mobile App</span>
+        <span class="role-pill admin-pill" id="txtPillAdmin"><i class="fa-solid fa-shield-halved"></i> Admin Control</span>
+      </div>
+    </div>
+
+    {% if error %}
+    <div class="alert-error" id="errorBanner">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <form id="loginForm" method="POST" action="/login">
+      <div class="form-group">
+        <label class="form-label" for="usernameInput" id="lblUsername">Username</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-user input-icon"></i>
+          <input type="text" class="form-input" id="usernameInput" name="username" placeholder="e.g. farmer or admin" required autocomplete="username">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="passwordInput" id="lblPassword">Password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input type="password" class="form-input" id="passwordInput" name="password" placeholder="••••••••" required autocomplete="current-password">
+          <button type="button" class="password-toggle" id="togglePasswordBtn" aria-label="Show Password">
+            <i class="fa-solid fa-eye" id="eyeIcon"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        <span id="txtSignInBtn">Sign In to Farm Workspace</span>
+      </button>
+    </form>
+
+    <div class="divider-row">
+      <div class="divider-line"></div>
+      <span id="txtOrQuick">Or 1-Click Instant Demo</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- 1-Click Instant Demo Buttons -->
+    <div class="quick-login-grid">
+      <!-- Farmer / User Login -->
+      <button type="button" class="quick-btn" onclick="quickLogin('farmer', 'farmer123')">
+        <div class="quick-btn-left">
+          <div class="quick-btn-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+          <div>
+            <div class="quick-title" id="txtQuickFarmerTitle">Farmer / Field User</div>
+            <div class="quick-sub" id="txtQuickFarmerSub">Phone screen layout • Only end results visible</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right quick-arrow"></i>
+      </button>
+
+      <!-- Administrator Login -->
+      <button type="button" class="quick-btn admin-quick" onclick="quickLogin('admin', 'admin123')">
+        <div class="quick-btn-left">
+          <div class="quick-btn-icon"><i class="fa-solid fa-sliders"></i></div>
+          <div>
+            <div class="quick-title" id="txtQuickAdminTitle">Administrator Console</div>
+            <div class="quick-sub" id="txtQuickAdminSub">Full telemetry, models, firmware & audit controls</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right quick-arrow"></i>
+      </button>
+    </div>
+
+    <div class="footer-help">
+      <span id="txtCredentialsHelp">Default logins: <code>farmer / farmer123</code> or <code>admin / admin123</code></span>
+    </div>
+  </div>
+
+  <script>
+    // Localization dictionary for Login Page
+    const LOGIN_I18N = {
+      en: {
+        title: "Yukti AI",
+        subtitle: "Autonomous Precision Agriculture & Field Intelligence",
+        pillUser: '<i class="fa-solid fa-mobile-screen"></i> Farmer Mobile App',
+        pillAdmin: '<i class="fa-solid fa-shield-halved"></i> Admin Control',
+        lblUsername: "Username",
+        lblPassword: "Password",
+        signIn: "Sign In to Farm Workspace",
+        orQuick: "Or 1-Click Instant Demo",
+        farmerTitle: "Farmer / Field User",
+        farmerSub: "Phone screen layout • Only end results visible",
+        adminTitle: "Administrator Console",
+        adminSub: "Full telemetry, models, firmware & audit controls",
+        help: "Default logins: <code>farmer / farmer123</code> or <code>admin / admin123</code>",
+        themeDark: "Dark",
+        themeLight: "Light"
+      },
+      hi: {
+        title: "युक्ति एआई",
+        subtitle: "स्वायत्त सटीक कृषि एवं खेत बुद्धिमत्ता प्रणाली",
+        pillUser: '<i class="fa-solid fa-mobile-screen"></i> किसान मोबाइल ऐप',
+        pillAdmin: '<i class="fa-solid fa-shield-halved"></i> व्यवस्थापक नियंत्रण',
+        lblUsername: "उपयोगकर्ता नाम (यूज़रनेम)",
+        lblPassword: "पासवर्ड",
+        signIn: "खेत वर्कस्पेस में प्रवेश करें",
+        orQuick: "या 1-क्लिक सीधा डेमो प्रवेश",
+        farmerTitle: "किसान / फील्ड उपयोगकर्ता",
+        farmerSub: "फोन स्क्रीन लेआउट • केवल अंतिम परिणाम दृश्यमान",
+        adminTitle: "व्यवस्थापक (एडमिन) कंसोल",
+        adminSub: "पूर्ण टेलीमेट्री, न्यूरल मॉडल, फर्मवेयर एवं ऑडिट",
+        help: "डिफ़ॉल्ट लॉगिन: <code>farmer / farmer123</code> या <code>admin / admin123</code>",
+        themeDark: "डार्क",
+        themeLight: "लाइट"
+      },
+      pa: {
+        title: "ਯੁਕਤੀ ਏਆਈ",
+        subtitle: "ਸਵੈ-ਚਾਲਿਤ ਸ਼ੁੱਧ ਖੇਤੀਬਾੜੀ ਅਤੇ ਖੇਤ ਖੁਫੀਆ ਪ੍ਰਣਾਲੀ",
+        pillUser: '<i class="fa-solid fa-mobile-screen"></i> ਕਿਸਾਨ ਮੋਬਾਈਲ ਐਪ',
+        pillAdmin: '<i class="fa-solid fa-shield-halved"></i> ਐਡਮਿਨ ਕੰਟਰੋਲ',
+        lblUsername: "ਵਰਤੋਂਕਾਰ ਨਾਂ (ਯੂਜ਼ਰਨੇਮ)",
+        lblPassword: "ਪਾਸਵਰਡ",
+        signIn: "ਖੇਤ ਵਰਕਸਪੇਸ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ",
+        orQuick: "ਜਾਂ 1-ਕਲਿੱਕ ਸਿੱਧਾ ਡੈਮੋ ਦਾਖਲਾ",
+        farmerTitle: "ਕਿਸਾਨ / ਖੇਤ ਵਰਤੋਂਕਾਰ",
+        farmerSub: "ਫੋਨ ਸਕ੍ਰੀਨ ਲੇਆਉਟ • ਸਿਰਫ਼ ਅੰਤਿਮ ਨਤੀਜੇ ਦਿਖਾਈ ਦੇਣਗੇ",
+        adminTitle: "ਐਡਮਿਨਿਸਟ੍ਰੇਟਰ ਕੰਸੋਲ",
+        adminSub: "ਪੂਰੀ ਟੈਲੀਮੈਟਰੀ, ਨਿਊਰਲ ਮਾਡਲ, ਫਰਮਵੇਅਰ ਅਤੇ ਲੌਗ ਕੰਟਰੋਲ",
+        help: "ਡਿਫੌਲਟ ਲੌਗਇਨ: <code>farmer / farmer123</code> ਜਾਂ <code>admin / admin123</code>",
+        themeDark: "ਡਾਰਕ",
+        themeLight: "ਲਾਈਟ"
+      }
+    };
+
+    function setLoginLanguage(lang) {
+      if (!LOGIN_I18N[lang]) lang = "en";
+      localStorage.setItem("yukti_language", lang);
+      document.body.setAttribute("data-lang", lang);
+
+      const d = LOGIN_I18N[lang];
+      document.getElementById("txtTitle").textContent = d.title;
+      document.getElementById("txtSubtitle").textContent = d.subtitle;
+      document.getElementById("txtPillUser").innerHTML = d.pillUser;
+      document.getElementById("txtPillAdmin").innerHTML = d.pillAdmin;
+      document.getElementById("lblUsername").textContent = d.lblUsername;
+      document.getElementById("lblPassword").textContent = d.lblPassword;
+      document.getElementById("txtSignInBtn").textContent = d.signIn;
+      document.getElementById("txtOrQuick").textContent = d.orQuick;
+      document.getElementById("txtQuickFarmerTitle").textContent = d.farmerTitle;
+      document.getElementById("txtQuickFarmerSub").textContent = d.farmerSub;
+      document.getElementById("txtQuickAdminTitle").textContent = d.adminTitle;
+      document.getElementById("txtQuickAdminSub").textContent = d.adminSub;
+      document.getElementById("txtCredentialsHelp").innerHTML = d.help;
+
+      const langSelect = document.getElementById("langSelectLogin");
+      if (langSelect) langSelect.value = lang;
+    }
+
+    // Quick Login
+    function quickLogin(username, password) {
+      document.getElementById("usernameInput").value = username;
+      document.getElementById("passwordInput").value = password;
+      const btn = document.getElementById("submitBtn");
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
+      document.getElementById("loginForm").submit();
+    }
+
+    // Toggle Password Visibility
+    const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+    const passwordInput = document.getElementById("passwordInput");
+    const eyeIcon = document.getElementById("eyeIcon");
+
+    togglePasswordBtn.addEventListener("click", () => {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      eyeIcon.className = isPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
+    });
+
+    // Theme Toggle
+    const themeBtn = document.getElementById("themeToggleBtn");
+    const themeIcon = document.getElementById("themeIcon");
+    const themeLabel = document.getElementById("themeLabel");
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.body.setAttribute("data-theme", "dark");
+        themeIcon.className = "fa-solid fa-sun";
+        themeIcon.style.color = "#38bdf8";
+        themeLabel.textContent = "Light";
+        localStorage.setItem("yukti_theme", "dark");
+      } else {
+        document.body.removeAttribute("data-theme");
+        themeIcon.className = "fa-solid fa-moon";
+        themeIcon.style.color = "#f59e0b";
+        themeLabel.textContent = "Dark";
+        localStorage.setItem("yukti_theme", "light");
+      }
+    }
+
+    themeBtn.addEventListener("click", () => {
+      const isDark = document.body.getAttribute("data-theme") === "dark";
+      applyTheme(isDark ? "light" : "dark");
+    });
+
+    // Language Dropdown Event
+    document.getElementById("langSelectLogin").addEventListener("change", (e) => {
+      setLoginLanguage(e.target.value);
+    });
+
+    // Initialize on load
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("yukti_theme") || "light";
+      applyTheme(savedTheme);
+
+      const savedLang = localStorage.getItem("yukti_language") || "en";
+      setLoginLanguage(savedLang);
+    });
+  </script>
+</body>
+</html>
