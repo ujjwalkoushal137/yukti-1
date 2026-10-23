@@ -3,11 +3,11 @@ title: Yuktiii
 emoji: 🌱
 colorFrom: green
 colorTo: blue
-sdk: docker
-app_port: 7860
+sdk: gradio
+app_file: app.py
 pinned: false
 license: apache-2.0
-short_description: An AI tool for smart agricultural insights.
+short_description: Multi-modal AI platform for autonomous precision agriculture.
 ---
 
 # 🌱 Yukti AI - Autonomous Precision Agriculture Platform
