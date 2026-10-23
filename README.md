@@ -7,7 +7,7 @@ sdk: gradio
 app_file: app.py
 pinned: false
 license: apache-2.0
-short_description: Multi-modal AI platform for autonomous precision agriculture.
+short_description: Multi-modal AI for autonomous precision agriculture.
 ---
 
 # 🌱 Yukti AI - Autonomous Precision Agriculture Platform
