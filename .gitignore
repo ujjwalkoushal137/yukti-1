@@ -25,4 +25,5 @@ crop_damage/
 intrusion_detection/
 plant_health/
 incoming_telemetry/
-test_images/
+/test_images/
+!static/test_images/
